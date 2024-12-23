@@ -22,7 +22,7 @@ public class ReviewController {
     @PostMapping("/create")
     public ResponseEntity<?> createReview(@RequestBody CreateReviewRequestDto createReviewRequestDto) {
         try {
-            reviewService.createReviewNativeQuery(createReviewRequestDto);
+            reviewService.createReview2(createReviewRequestDto);
             return ResponseEntity.status(HttpStatus.CREATED).body("review created");
         }
         catch (Exception e) {
@@ -30,7 +30,7 @@ public class ReviewController {
         }
     }
     @GetMapping("/{date}")
-    public ResponseEntity<?> getReviewDate(@RequestHeader("username") String username,@DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+    public ResponseEntity<?> getReviewDate(@RequestHeader("username") String username, @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
         try {
             return ResponseEntity.ok(reviewService.getReviewDate(username,date));
         }
@@ -63,6 +63,16 @@ public class ReviewController {
     public ResponseEntity<?> setReviewLike(@RequestHeader("username") String username, @RequestBody SetReviewLikeRequestDto setReviewLikeRequestDto) {
         try {
             likedReviewService.setReviewLike(username,setReviewLikeRequestDto);
+            return ResponseEntity.ok().build();
+        }
+        catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @PostMapping("/unlike")
+    public ResponseEntity<?> setReviewUnLike(@RequestHeader("username") String username, @RequestBody SetReviewLikeRequestDto setReviewLikeRequestDto) {
+        try {
+            likedReviewService.setReviewUnlike(username,setReviewLikeRequestDto);
             return ResponseEntity.ok().build();
         }
         catch (Exception e) {

@@ -11,8 +11,9 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "liked_song",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "review_id"}))
+@Table(name = "liked_song", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"user_id", "song_id"})
+})
 public class LikedSong {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

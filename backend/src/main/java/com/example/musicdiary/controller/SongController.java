@@ -51,11 +51,22 @@ public class SongController {
         }
     }
 
+    @PostMapping("/unlike")
+    public ResponseEntity<?> setSongUnlike(@RequestHeader("username") String username, @RequestBody SetSongLikeRequestDto setSongLikeRequestDto) {
+        try {
+            likedSongService.setSongUnlike(username,setSongLikeRequestDto);
+            return ResponseEntity.ok().build();
+        }
+        catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
     @GetMapping("/like")
     public ResponseEntity<?> getSongLike(@RequestHeader("username") String username) {
         try {
-            likedSongService.getLikedSongListByUsername(username);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok(likedSongService.getLikedSongListByUsername(username));
         }
         catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

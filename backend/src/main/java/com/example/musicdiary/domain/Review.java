@@ -7,13 +7,15 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Entity
+
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "review",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "review_date"}))
+@Entity
+@Table(name = "review", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"user_id", "review_date"})
+})
 public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

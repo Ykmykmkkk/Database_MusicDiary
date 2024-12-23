@@ -8,8 +8,9 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "liked_review",
-uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "review_id"}))
+@Table(name = "liked_review", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"user_id", "review_id"})
+})
 public class LikedReview {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

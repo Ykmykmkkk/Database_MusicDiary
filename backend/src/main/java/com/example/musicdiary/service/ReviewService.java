@@ -8,6 +8,7 @@ import com.example.musicdiary.dto.ResponseDto.ReviewResponseDto;
 import com.example.musicdiary.repository.LikedReviewRepository;
 import com.example.musicdiary.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,11 +20,16 @@ import java.util.List;
 @Service
 public class ReviewService {
     private final ReviewRepository reviewRepository;
-    private final LikedReviewRepository likedReviewRepository;
     private final UserService userService;
     private final SongService songService;
-@Transactional(isolation = Isolation.SERIALIZABLE)
+
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void createReview(CreateReviewRequestDto createReviewRequestDto) {
+        boolean isExists = reviewRepository.existsByUser_usernameAndReviewDate(
+                createReviewRequestDto.getUsername(),createReviewRequestDto.getReviewDate());
+        if (isExists) {
+           throw new IllegalArgumentException("Already reviewed");
+        }
         String username = createReviewRequestDto.getUsername();
         User user = userService.getUserEntityByUsername(username);
         String songTitle = createReviewRequestDto.getSongTitle();
@@ -38,9 +44,10 @@ public class ReviewService {
             .build();
         reviewRepository.save(review);
     }
-
-    public void createReviewNativeQuery(CreateReviewRequestDto createReviewRequestDto) {
-        reviewRepository.createReview(createReviewRequestDto.getIsPublic(),
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public void createReview2(CreateReviewRequestDto createReviewRequestDto) {
+        reviewRepository.createReviewbyNativequery(
+                createReviewRequestDto.getIsPublic(),
                 createReviewRequestDto.getReviewContent(),
                 createReviewRequestDto.getReviewDate(),
                 createReviewRequestDto.getSongTitle(),
@@ -50,6 +57,7 @@ public class ReviewService {
     }
 
 
+    @Transactional(readOnly = true)
     public List<ReviewResponseDto> getAllReview(String username) {
         List<Review> reviews = reviewRepository.findAllByUser_username(username);
         if(reviews.isEmpty()){
@@ -57,7 +65,7 @@ public class ReviewService {
         }
         return toResponseDtoList(reviews);
     }
-
+    @Transactional(readOnly = true)
     public List<ReviewResponseDto> getPublicReview() {
         List<Review> reviews = reviewRepository.findAllByIsPublicTrue();
         if(reviews.isEmpty()){
@@ -65,17 +73,16 @@ public class ReviewService {
         }
         return toResponseDtoList(reviews);
     }
-
+    @Transactional(readOnly = true)
     public ReviewResponseDto getReviewDate(String username, LocalDate date) {
         Review review = reviewRepository.findByUser_usernameAndReviewDate(username, date).
                 orElseThrow(() -> new IllegalArgumentException("리뷰가 존재하지 않습니다"));
         return ReviewResponseDto.builder()
-               .id(review.getId())
                .username(review.getUser().getUsername())
                .title(review.getSong().getTitle())
                .artist(review.getSong().getArtist())
                .reviewContent(review.getReviewContent())
-               .reviewDate(review.getReviewDate().toString())
+               .reviewDate(review.getReviewDate())
                .isPublic(review.getIsPublic())
                .build();
     }
@@ -83,19 +90,18 @@ public class ReviewService {
     public List<ReviewResponseDto> toResponseDtoList(List<Review> reviews) {
         return reviews.stream()
                .map(review -> ReviewResponseDto.builder()
-                       .id(review.getId())
                        .username(review.getUser().getUsername())
                        .title(review.getSong().getTitle())
                        .artist(review.getSong().getArtist())
                        .reviewContent(review.getReviewContent())
-                       .reviewDate(review.getReviewDate().toString())
+                       .reviewDate(review.getReviewDate())
                        .isPublic(review.getIsPublic())
                        .build())
                .toList();
     }
 
-    public Review getReviewEntityById(Long id) {
-        return reviewRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("리뷰가 존재하지 않습니다"));
+    public Review getReviewEntityByUsernameAndReviewDate(String username, LocalDate date) {
+        return reviewRepository.findByUser_usernameAndReviewDate(username, date).orElseThrow(() -> new IllegalArgumentException("리뷰가 존재하지 않습니다"));
     }
 
 }

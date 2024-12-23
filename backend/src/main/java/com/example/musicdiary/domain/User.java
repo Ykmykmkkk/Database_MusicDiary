@@ -12,7 +12,6 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "users",uniqueConstraints = @UniqueConstraint(columnNames = "username"))
 public class User{
 
     @Id
@@ -43,6 +42,9 @@ public class User{
     @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
     private List<LikedReview> likedReviews = new ArrayList<>();
 
+    public void delete() {
+        this.deleted = true;
+    }
     public void updatePassword(String password) {
         this.password = password;
     }

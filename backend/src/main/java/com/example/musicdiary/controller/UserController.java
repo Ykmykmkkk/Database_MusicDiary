@@ -11,6 +11,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user")
@@ -51,4 +53,14 @@ public class UserController {
         }
     }
 
+    @PatchMapping("/delete")
+    public ResponseEntity<?> deleteUser(@RequestBody Map<String, String> request) {
+        String username = request.get("username");
+        try {
+            userService.deleteUser(username);
+            return ResponseEntity.status(HttpStatus.OK).body("User deleted success");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Duplicate check failed");
+        }
+    }
 }

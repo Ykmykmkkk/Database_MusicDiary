@@ -12,14 +12,15 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "songs", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "review_date"}))
+@Table(name = "song", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"title", "artist"})
+})
 public class Song {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "song_id")
     private long id;
 
-    @Column(unique = true, nullable = false)
     private String title;
     @Column(nullable = false)
     private String artist;

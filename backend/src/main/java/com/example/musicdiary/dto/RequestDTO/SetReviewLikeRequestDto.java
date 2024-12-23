@@ -3,7 +3,10 @@ package com.example.musicdiary.dto.RequestDTO;
 
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
 public class SetReviewLikeRequestDto {
-     private Long reviewId;
+     private LocalDate reviewDate;
+     private String reviewWriter;
 }

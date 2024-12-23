@@ -2,13 +2,14 @@ package com.example.musicdiary.dto.ResponseDto;
 
 import lombok.Builder;
 import lombok.Data;
+
+import java.time.LocalDate;
+
 @Builder
 @Data
 public class ReviewResponseDto {
 
-    private long id;
-
-    private String reviewDate;
+    private LocalDate reviewDate;
 
     private String reviewContent;
 

@@ -6,11 +6,14 @@ import com.example.musicdiary.dto.ResponseDto.SongResponseDto;
 import com.example.musicdiary.repository.SongRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class SongService {
     private final SongRepository songRepository;
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void createSong(CreateSongRequestDto createSongRequestDto) {
         boolean isExists = songRepository.existsByTitleAndArtist(
                 createSongRequestDto.getTitle()
@@ -22,7 +25,7 @@ public class SongService {
             songRepository.save(createSongRequestDto.toEntity());
         }
     }
-
+    @Transactional(readOnly = true)
     public SongResponseDto getSongByTitleAndArtist(String title, String artist) {
         Song song = songRepository.findByTitleAndArtist(title, artist)
                 .orElseThrow(() -> new IllegalArgumentException("노래가 존재하지 않습니다"));
