@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:musicdiary/Screen/Login_Page/login_page.dart';
 import 'package:musicdiary/Screen/Login_Page/main_page.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   Intl.defaultLocale = 'ko_KR'; // 기본 로케일 설정
+  await dotenv.load(fileName: "assets/config/.env");
   runApp(const MyApp());
 }
 

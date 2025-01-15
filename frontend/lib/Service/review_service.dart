@@ -1,10 +1,11 @@
 import 'dart:convert';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:musicdiary/Model/review_model.dart';
 
 class ReviewService {
-  static const hostAddress = "192.168.0.231";
+  static final hostAddress = dotenv.env['API_ADDRESS'];
 
   static Future<void> createReview(
       String reviewDate,
