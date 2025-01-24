@@ -1,8 +1,8 @@
 package com.example.musicdiary.dto;
 
-import com.example.musicdiary.domain.LikedReview;
-import com.example.musicdiary.domain.LikedSong;
-import com.example.musicdiary.domain.User;
+import com.example.musicdiary.entity.LikedReview;
+import com.example.musicdiary.entity.LikedSong;
+import com.example.musicdiary.entity.User;
 import lombok.Builder;
 import lombok.Data;
 

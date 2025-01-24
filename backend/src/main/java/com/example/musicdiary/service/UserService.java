@@ -1,7 +1,6 @@
 package com.example.musicdiary.service;
 
-import com.example.musicdiary.domain.User;
-import com.example.musicdiary.dto.RequestDTO.CreateUserRequestDto;
+import com.example.musicdiary.entity.User;
 import com.example.musicdiary.dto.RequestDTO.DuplicateUserRequestDto;
 import com.example.musicdiary.dto.RequestDTO.LoginRequestDto;
 import com.example.musicdiary.dto.UserDto;
@@ -9,7 +8,6 @@ import com.example.musicdiary.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;

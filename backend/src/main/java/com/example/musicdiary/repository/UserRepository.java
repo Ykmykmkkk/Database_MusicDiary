@@ -1,6 +1,6 @@
 package com.example.musicdiary.repository;
 
-import com.example.musicdiary.domain.User;
+import com.example.musicdiary.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

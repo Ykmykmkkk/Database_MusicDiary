@@ -1,12 +1,10 @@
-package com.example.musicdiary.domain;
+package com.example.musicdiary.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.List;
-
 @Entity
 @Getter
 @Builder
@@ -45,6 +43,7 @@ public class User{
     public void delete() {
         this.deleted = true;
     }
+
     public void updatePassword(String password) {
         this.password = password;
     }

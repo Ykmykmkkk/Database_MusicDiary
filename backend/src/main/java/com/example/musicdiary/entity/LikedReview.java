@@ -1,4 +1,4 @@
-package com.example.musicdiary.domain;
+package com.example.musicdiary.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

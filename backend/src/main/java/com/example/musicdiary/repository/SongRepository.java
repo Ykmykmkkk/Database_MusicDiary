@@ -1,11 +1,9 @@
 package com.example.musicdiary.repository;
 
-import com.example.musicdiary.domain.Song;
-import jakarta.persistence.Column;
+import com.example.musicdiary.entity.Song;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
 import java.util.Optional;
 
 @Repository
