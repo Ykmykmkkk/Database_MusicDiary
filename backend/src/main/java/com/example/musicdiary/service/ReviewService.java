@@ -1,14 +1,12 @@
 package com.example.musicdiary.service;
 
-import com.example.musicdiary.domain.Review;
-import com.example.musicdiary.domain.Song;
-import com.example.musicdiary.domain.User;
+import com.example.musicdiary.entity.Review;
+import com.example.musicdiary.entity.Song;
+import com.example.musicdiary.entity.User;
 import com.example.musicdiary.dto.RequestDTO.CreateReviewRequestDto;
 import com.example.musicdiary.dto.ResponseDto.ReviewResponseDto;
-import com.example.musicdiary.repository.LikedReviewRepository;
 import com.example.musicdiary.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;

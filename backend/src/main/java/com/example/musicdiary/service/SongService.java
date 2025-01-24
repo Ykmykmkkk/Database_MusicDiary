@@ -1,6 +1,6 @@
 package com.example.musicdiary.service;
 
-import com.example.musicdiary.domain.Song;
+import com.example.musicdiary.entity.Song;
 import com.example.musicdiary.dto.RequestDTO.CreateSongRequestDto;
 import com.example.musicdiary.dto.ResponseDto.SongResponseDto;
 import com.example.musicdiary.repository.SongRepository;

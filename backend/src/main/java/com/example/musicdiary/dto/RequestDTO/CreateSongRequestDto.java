@@ -1,11 +1,9 @@
 package com.example.musicdiary.dto.RequestDTO;
 
-import com.example.musicdiary.domain.Song;
+import com.example.musicdiary.entity.Song;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
 
 @Data
 public class CreateSongRequestDto {
