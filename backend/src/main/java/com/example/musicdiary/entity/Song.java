@@ -1,6 +1,7 @@
 package com.example.musicdiary.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -19,6 +20,7 @@ public class Song {
     @Column(name = "song_id")
     private long id;
 
+    @Size(max=1000)
     private String title;
     @Column(nullable = false)
     private String artist;

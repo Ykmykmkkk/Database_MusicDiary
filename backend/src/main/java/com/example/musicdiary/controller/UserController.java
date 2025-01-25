@@ -4,6 +4,7 @@ import com.example.musicdiary.dto.RequestDTO.CreateUserRequestDto;
 import com.example.musicdiary.dto.RequestDTO.DuplicateUserRequestDto;
 import com.example.musicdiary.dto.RequestDTO.LoginRequestDto;
 import com.example.musicdiary.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,19 +17,17 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user")
+
 public class UserController {
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
-
     @PostMapping("/create")
-    public ResponseEntity<?> createUser(@RequestBody CreateUserRequestDto createUserDto) {
-        try {
-            userService.createUser(createUserDto.toServiceDto(passwordEncoder.encode(createUserDto.getPassword())));
-            return ResponseEntity.status(HttpStatus.CREATED).body("User created successfully");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<?> createUser(@Valid @RequestBody CreateUserRequestDto createUserDto) {
+        // try catch 문을 사용하지 않고 uncheked exception 처리.
+        // 반드시 컴파일 단계에서 예외 처리할 이유나 해결할 로직이 없으니까 GlobalExveptionHandler를 통해 관리
+        userService.createUser(createUserDto.toServiceDto(passwordEncoder.encode(createUserDto.getPassword())));
+        return ResponseEntity.status(HttpStatus.CREATED).body("User created successfully");
     }
 
     @PostMapping("/login")

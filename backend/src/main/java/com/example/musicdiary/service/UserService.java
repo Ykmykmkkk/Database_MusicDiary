@@ -5,6 +5,9 @@ import com.example.musicdiary.dto.RequestDTO.DuplicateUserRequestDto;
 import com.example.musicdiary.dto.RequestDTO.LoginRequestDto;
 import com.example.musicdiary.dto.UserDto;
 import com.example.musicdiary.repository.UserRepository;
+
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,12 +25,19 @@ public class UserService {
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
-
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    private final ValidationService validationService;
+    @Transactional
     public void createUser(UserDto userDto) {
-        isDuplicated(userDto.getUsername());
-        userRepository.save(userDto.toEntity());
+        try {
+            User user = userDto.toEntity();
+            validationService.checkValid(user);
+            userRepository.save(user);
+        } catch (ConstraintViolationException ex) {
+            System.out.println("ConstraintViolationException caught in UserService!"); // 디버깅 로그
+            throw ex; // 예외를 다시 던져 GlobalExceptionHandler로 전파
+        }
     }
+
     @Transactional
     public void login(LoginRequestDto loginRequestDto) {
         String username = loginRequestDto.getUsername();
