@@ -3,24 +3,31 @@ package com.example.musicdiary.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Entity
+import java.time.LocalDate;
+
+
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "liked_song", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"user_id", "song_id"})
+@Entity
+@Table(name = "reviews", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"user_id", "review_date"})
 })
-public class LikedSong {
+public class ReviewEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
+    private LocalDate reviewDate;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private UserEntity userEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "song_id")
-    private Song song;
+    private SongEntity songEntity;
+
+    private String reviewContent;
+    private Boolean isPublic;
 }

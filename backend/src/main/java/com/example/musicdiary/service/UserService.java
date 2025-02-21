@@ -1,37 +1,44 @@
 package com.example.musicdiary.service;
 
-import com.example.musicdiary.entity.User;
-import com.example.musicdiary.dto.RequestDTO.DuplicateUserRequestDto;
-import com.example.musicdiary.dto.RequestDTO.LoginRequestDto;
-import com.example.musicdiary.dto.UserDto;
+import com.example.musicdiary.entity.UserEntity;
+import com.example.musicdiary.presentation.dto.request.DuplicateUserRequestDto;
+import com.example.musicdiary.presentation.dto.request.LoginRequestDto;
+import com.example.musicdiary.presentation.dto.UserDto;
 import com.example.musicdiary.repository.UserRepository;
 
 import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
-    private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final ValidationService validationService;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        UserEntity userEntity = userRepository.findByUsername(username).orElseThrow();
+        return new User(userEntity.getUsername(),userEntity.getPassword(),true,true,
+                true,true,new ArrayList<>());
+    }
     @Transactional
     public void createUser(UserDto userDto) {
         try {
-            User user = userDto.toEntity();
-            validationService.checkValid(user);
-            userRepository.save(user);
+            UserEntity userEntity = userDto.toEntity();
+            validationService.checkValid(userEntity);
+            userRepository.save(userEntity);
         } catch (ConstraintViolationException ex) {
             System.out.println("ConstraintViolationException caught in UserService!"); // 디버깅 로그
             throw ex; // 예외를 다시 던져 GlobalExceptionHandler로 전파
@@ -42,9 +49,9 @@ public class UserService {
     public void login(LoginRequestDto loginRequestDto) {
         String username = loginRequestDto.getUsername();
         String rawPassword = loginRequestDto.getPassword();
-        User user = userRepository.findByUsernameAndDeleted(username, false)
+        UserEntity userEntity = userRepository.findByUsernameAndDeleted(username, false)
                 .orElseThrow(() -> new IllegalArgumentException("아이디 또는 비밀번호가 틀렸습니다."));
-        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
+        if (!passwordEncoder.matches(rawPassword, userEntity.getPassword())) {
             throw new IllegalArgumentException("아이디 또는 비밀번호가 틀렸습니다.");
         }
     }
@@ -54,14 +61,6 @@ public class UserService {
         isDuplicated(username);
     }
 
-    public void securityLogin(LoginRequestDto loginRequestDto) {
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                loginRequestDto.getUsername(),
-                loginRequestDto.getPassword()
-        );
-        Authentication authentication = authenticationManager.authenticate(authenticationToken);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-    }
 
     private void isDuplicated(String username) {
         if (userRepository.existsByUsernameAndDeleted(username, false)) {
@@ -69,16 +68,18 @@ public class UserService {
         }
     }
     @Transactional(readOnly = true)
-    public User getUserEntityByUsername(String username) {
+    public UserEntity getUserEntityByUsername(String username) {
         return userRepository.findByUsernameAndDeleted(username, false)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
     }
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void deleteUser(String username) {
-        User user = userRepository.findByUsernameAndDeleted(username, false)
+        UserEntity userEntity = userRepository.findByUsernameAndDeleted(username, false)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
-        user.delete();
-        userRepository.save(user);
+        userEntity.delete();
+        userRepository.save(userEntity);
     }
+
+
 }
 

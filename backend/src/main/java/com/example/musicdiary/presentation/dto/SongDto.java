@@ -1,4 +1,4 @@
-package com.example.musicdiary.dto;
+package com.example.musicdiary.presentation.dto;
 
 import lombok.Data;
 

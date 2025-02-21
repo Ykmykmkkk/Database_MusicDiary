@@ -1,4 +1,4 @@
-package com.example.musicdiary.dto.ResponseDto;
+package com.example.musicdiary.presentation.dto.response;
 
 import lombok.Builder;
 import lombok.Data;

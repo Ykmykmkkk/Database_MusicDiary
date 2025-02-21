@@ -1,13 +1,12 @@
-package com.example.musicdiary.controller;
+package com.example.musicdiary.presentation.controller;
 
 
-import com.example.musicdiary.dto.RequestDTO.CreateSongRequestDto;
-import com.example.musicdiary.dto.RequestDTO.SetSongLikeRequestDto;
-import com.example.musicdiary.dto.ResponseDto.SongResponseDto;
+import com.example.musicdiary.presentation.dto.request.CreateSongRequestDto;
+import com.example.musicdiary.presentation.dto.request.SetSongLikeRequestDto;
+import com.example.musicdiary.presentation.dto.response.SongResponseDto;
 import com.example.musicdiary.service.LikedSongService;
 import com.example.musicdiary.service.SongService;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.usertype.StaticUserTypeSupport;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +22,7 @@ public class SongController {
     public ResponseEntity<?> createSong(@RequestBody CreateSongRequestDto createSongRequestDto) {
         try {
             songService.createSong(createSongRequestDto);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Song created successfully");
+            return ResponseEntity.status(HttpStatus.CREATED).body("SongEntity created successfully");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

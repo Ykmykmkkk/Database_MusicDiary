@@ -1,4 +1,4 @@
-package com.example.musicdiary.controller;
+package com.example.musicdiary.presentation.exception;
 
 import lombok.Getter;
 

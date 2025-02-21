@@ -1,6 +1,6 @@
-package com.example.musicdiary.dto.RequestDTO;
+package com.example.musicdiary.presentation.dto.request;
 
-import com.example.musicdiary.entity.Song;
+import com.example.musicdiary.entity.SongEntity;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -13,8 +13,8 @@ public class CreateSongRequestDto {
     private String album;
     private LocalDate releaseDate;
     private String durationTime;
-    public Song toEntity() {
-        return Song.builder()
+    public SongEntity toEntity() {
+        return SongEntity.builder()
                 .title(title)
                 .artist(artist)
                 .album(album)

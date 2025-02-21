@@ -1,6 +1,6 @@
 package com.example.musicdiary.repository;
 
-import com.example.musicdiary.entity.Review;
+import com.example.musicdiary.entity.ReviewEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -12,27 +12,27 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ReviewRepository extends JpaRepository<Review, Long> {
-    @Query("SELECT r FROM Review r JOIN FETCH r.user JOIN FETCH r.song WHERE r.isPublic = true")
-    List<Review> findAllByIsPublicTrue();
-    List<Review> findAllByUser_username(String username);
+public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
+    @Query("SELECT r FROM ReviewEntity r JOIN FETCH r.userEntity JOIN FETCH r.songEntity WHERE r.isPublic = true")
+    List<ReviewEntity> findAllByIsPublicTrue();
+    List<ReviewEntity> findAllByUserEntity_username(String username);
 
-    Optional<Review> findByUser_usernameAndReviewDate(String username, LocalDate date);
+    Optional<ReviewEntity> findByUserEntity_usernameAndReviewDate(String username, LocalDate date);
 
-    boolean existsByUser_usernameAndReviewDate(String username, LocalDate reviewDate);
+    boolean existsByUserEntity_usernameAndReviewDate(String username, LocalDate reviewDate);
 
-    @Query("SELECT COUNT(r) FROM Review r WHERE r.user.username = :username AND r.reviewDate = :reviewDate")
+    @Query("SELECT COUNT(r) FROM ReviewEntity r WHERE r.userEntity.username = :username AND r.reviewDate = :reviewDate")
     Long countByUsernameAndReviewDate(String username, LocalDate reviewDate);
 
     @Modifying
     @Query(value = """
-    INSERT INTO review (is_public, review_content, review_date, song_id, user_id)
+    INSERT INTO reviewEntity (is_public, review_content, review_date, song_id, user_id)
     SELECT :isPublic, :reviewContent, :reviewDate, 
-           (SELECT song_id FROM song WHERE title = :songTitle AND artist = :songArtist),
-           (SELECT user_id FROM user WHERE username = :username)
+           (SELECT song_id FROM songs WHERE title = :songTitle AND artist = :songArtist),
+           (SELECT user_id FROM users WHERE username = :username)
     WHERE NOT EXISTS (
-        SELECT 1 FROM review r
-        JOIN user u ON r.user_id = u.user_id
+        SELECT 1 FROM reviewEntity r
+        JOIN userEntity u ON r.user_id = u.user_id
         WHERE u.username = :username AND r.review_date = :reviewDate
     )
     """, nativeQuery = true)

@@ -8,20 +8,19 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "liked_review", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"user_id", "review_id"})
+@Table(name = "liked_songs", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"user_id", "song_id"})
 })
-public class LikedReview {
+public class LikedSongEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private UserEntity userEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "review_id")
-    private Review review;
-
+    @JoinColumn(name = "song_id")
+    private SongEntity songEntity;
 }
