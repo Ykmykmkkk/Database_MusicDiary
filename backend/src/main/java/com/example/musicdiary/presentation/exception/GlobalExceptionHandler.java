@@ -1,4 +1,4 @@
-package com.example.musicdiary.controller;
+package com.example.musicdiary.presentation.exception;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -50,3 +50,5 @@ public class GlobalExceptionHandler {
     }
 
 }
+
+

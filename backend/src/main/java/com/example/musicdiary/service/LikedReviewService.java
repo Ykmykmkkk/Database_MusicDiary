@@ -1,10 +1,10 @@
 package com.example.musicdiary.service;
 
-import com.example.musicdiary.entity.LikedReview;
-import com.example.musicdiary.entity.Review;
-import com.example.musicdiary.entity.User;
-import com.example.musicdiary.dto.RequestDTO.SetReviewLikeRequestDto;
-import com.example.musicdiary.dto.ResponseDto.ReviewResponseDto;
+import com.example.musicdiary.entity.LikedReviewEntity;
+import com.example.musicdiary.entity.ReviewEntity;
+import com.example.musicdiary.entity.UserEntity;
+import com.example.musicdiary.presentation.dto.request.SetReviewLikeRequestDto;
+import com.example.musicdiary.presentation.dto.response.ReviewResponseDto;
 import com.example.musicdiary.repository.LikedReviewRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -23,51 +23,51 @@ public class LikedReviewService {
     private final ReviewService reviewService;
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void setReviewLike(String username, SetReviewLikeRequestDto setReviewLikeRequestDto) {
-        boolean isExist = likedReviewRepository.existsByUser_UsernameAndReview_ReviewDate(setReviewLikeRequestDto.getReviewWriter(),setReviewLikeRequestDto.getReviewDate());
+        boolean isExist = likedReviewRepository.existsByUserEntity_UsernameAndReviewEntity_ReviewDate(setReviewLikeRequestDto.getReviewWriter(),setReviewLikeRequestDto.getReviewDate());
         if(isExist){
-            throw new IllegalArgumentException("Already liked this review");
+            throw new IllegalArgumentException("Already liked this reviewEntity");
         }
-        User user = userService.getUserEntityByUsername(username);
+        UserEntity userEntity = userService.getUserEntityByUsername(username);
         String reviewWriter = setReviewLikeRequestDto.getReviewWriter();
         LocalDate date = setReviewLikeRequestDto.getReviewDate();
-        Review review = reviewService.getReviewEntityByUsernameAndReviewDate(reviewWriter, date);
-        LikedReview likedReview = LikedReview.builder()
-               .user(user)
-               .review(review)
+        ReviewEntity reviewEntity = reviewService.getReviewEntityByUsernameAndReviewDate(reviewWriter, date);
+        LikedReviewEntity likedReviewEntity = LikedReviewEntity.builder()
+               .userEntity(userEntity)
+               .reviewEntity(reviewEntity)
                .build();
-        likedReviewRepository.save(likedReview);
+        likedReviewRepository.save(likedReviewEntity);
     }
     @Transactional(readOnly = true)
     public List<ReviewResponseDto> getLikedReviewListByUsername(String username) {
-        List<Review> likedReviews= likedReviewRepository.findAllByUser_Username(username).stream()
-                .map(LikedReview::getReview)
+        List<ReviewEntity> likedReviewEntities = likedReviewRepository.findAllByUser_Username(username).stream()
+                .map(LikedReviewEntity::getReviewEntity)
                 .toList();
-        return toResponseDtoList(likedReviews);
+        return toResponseDtoList(likedReviewEntities);
     }
-    public List<ReviewResponseDto> toResponseDtoList(List<Review> reviews) {
-        return reviews.stream()
+    public List<ReviewResponseDto> toResponseDtoList(List<ReviewEntity> reviewEntities) {
+        return reviewEntities.stream()
                 .map(review -> ReviewResponseDto.builder()
-                        .username(review.getUser().getUsername())
+                        .username(review.getUserEntity().getUsername())
                         .reviewDate(review.getReviewDate())
                         .reviewContent(review.getReviewContent())
-                        .title(review.getSong().getTitle())
-                        .artist(review.getSong().getArtist())
+                        .title(review.getSongEntity().getTitle())
+                        .artist(review.getSongEntity().getArtist())
                         .isPublic(review.getIsPublic())
                 .build()).toList();
     }
     @Transactional
     public void setReviewUnlike(String username, SetReviewLikeRequestDto setReviewLikeRequestDto) {
-        User user = userService.getUserEntityByUsername(username);
+        UserEntity userEntity = userService.getUserEntityByUsername(username);
         String reviewWriter = setReviewLikeRequestDto.getReviewWriter();
         LocalDate date = setReviewLikeRequestDto.getReviewDate();
-        Review review = reviewService.getReviewEntityByUsernameAndReviewDate(reviewWriter, date);
+        ReviewEntity reviewEntity = reviewService.getReviewEntityByUsernameAndReviewDate(reviewWriter, date);
 
-        // LikedReview 엔터티 조회
-        LikedReview likedReview = likedReviewRepository.findByUserAndReview(user, review)
-                .orElseThrow(() -> new EntityNotFoundException("LikedReview not found"));
+        // LikedReviewEntity 엔터티 조회
+        LikedReviewEntity likedReviewEntity = likedReviewRepository.findByUserEntityAndReviewEntity(userEntity, reviewEntity)
+                .orElseThrow(() -> new EntityNotFoundException("LikedReviewEntity not found"));
 
         // 삭제 처리
-        likedReviewRepository.delete(likedReview);
+        likedReviewRepository.delete(likedReviewEntity);
     }
 
 }

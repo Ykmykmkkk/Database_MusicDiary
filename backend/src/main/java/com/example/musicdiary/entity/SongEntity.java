@@ -11,10 +11,10 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "song", uniqueConstraints = {
+@Table(name = "songs", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"title", "artist"})
 })
-public class Song {
+public class SongEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "song_id")

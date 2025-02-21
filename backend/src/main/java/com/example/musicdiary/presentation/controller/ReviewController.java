@@ -1,7 +1,7 @@
-package com.example.musicdiary.controller;
+package com.example.musicdiary.presentation.controller;
 
-import com.example.musicdiary.dto.RequestDTO.CreateReviewRequestDto;
-import com.example.musicdiary.dto.RequestDTO.SetReviewLikeRequestDto;
+import com.example.musicdiary.presentation.dto.request.CreateReviewRequestDto;
+import com.example.musicdiary.presentation.dto.request.SetReviewLikeRequestDto;
 import com.example.musicdiary.service.LikedReviewService;
 import com.example.musicdiary.service.ReviewService;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ public class ReviewController {
     public ResponseEntity<?> createReview(@RequestBody CreateReviewRequestDto createReviewRequestDto) {
         try {
             reviewService.createReview2(createReviewRequestDto);
-            return ResponseEntity.status(HttpStatus.CREATED).body("review created");
+            return ResponseEntity.status(HttpStatus.CREATED).body("reviewEntity created");
         }
         catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

@@ -1,16 +1,16 @@
 package com.example.musicdiary.repository;
 
-import com.example.musicdiary.entity.User;
+import com.example.musicdiary.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<UserEntity, Long> {
     boolean existsByUsernameAndDeleted(String username, boolean deleted);
-    Optional<User> findByUsernameAndDeleted(String username, boolean deleted);
-    Optional<User> findByUsername(String username);
+    Optional<UserEntity> findByUsernameAndDeleted(String username, boolean deleted);
+    Optional<UserEntity> findByUsername(String username);
 
-    Optional<User> findByUsernameAndPasswordAndDeleted(String username, String password, boolean deleted);
+    Optional<UserEntity> findByUsernameAndPasswordAndDeleted(String username, String password, boolean deleted);
 }

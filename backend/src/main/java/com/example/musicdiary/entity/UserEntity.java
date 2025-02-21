@@ -1,7 +1,8 @@
 package com.example.musicdiary.entity;
 
+
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
@@ -12,7 +13,8 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User{
+@Table(name="users")
+public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,18 +34,19 @@ public class User{
     private String name;
 
     @Column(nullable = false)
+    @NotNull
     private String email;
 
     @Column(columnDefinition = "boolean default false")
     private boolean deleted;
 
     @Builder.Default
-    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
-    private List<LikedSong> likedSongs = new ArrayList<>();
+    @OneToMany(mappedBy = "userEntity", cascade = CascadeType.PERSIST)
+    private List<LikedSongEntity> likedSongEntities = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
-    private List<LikedReview> likedReviews = new ArrayList<>();
+    @OneToMany(mappedBy = "userEntity", cascade = CascadeType.PERSIST)
+    private List<LikedReviewEntity> likedReviewEntities = new ArrayList<>();
 
     public void delete() {
         this.deleted = true;

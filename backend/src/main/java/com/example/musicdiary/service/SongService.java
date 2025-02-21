@@ -1,8 +1,8 @@
 package com.example.musicdiary.service;
 
-import com.example.musicdiary.entity.Song;
-import com.example.musicdiary.dto.RequestDTO.CreateSongRequestDto;
-import com.example.musicdiary.dto.ResponseDto.SongResponseDto;
+import com.example.musicdiary.entity.SongEntity;
+import com.example.musicdiary.presentation.dto.request.CreateSongRequestDto;
+import com.example.musicdiary.presentation.dto.response.SongResponseDto;
 import com.example.musicdiary.repository.SongRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,17 +27,17 @@ public class SongService {
     }
     @Transactional(readOnly = true)
     public SongResponseDto getSongByTitleAndArtist(String title, String artist) {
-        Song song = songRepository.findByTitleAndArtist(title, artist)
+        SongEntity songEntity = songRepository.findByTitleAndArtist(title, artist)
                 .orElseThrow(() -> new IllegalArgumentException("노래가 존재하지 않습니다"));
         return SongResponseDto.builder()
-               .title(song.getTitle())
-               .artist(song.getArtist())
-               .album(song.getAlbum())
-               .releaseDate(song.getReleaseDate())
-               .durationTime(song.getDurationTime())
+               .title(songEntity.getTitle())
+               .artist(songEntity.getArtist())
+               .album(songEntity.getAlbum())
+               .releaseDate(songEntity.getReleaseDate())
+               .durationTime(songEntity.getDurationTime())
                .build();
     }
-    public Song getSongEntityByTitleAndArtist(String title, String artist) {
+    public SongEntity getSongEntityByTitleAndArtist(String title, String artist) {
         return songRepository.findByTitleAndArtist(title, artist).orElseThrow(() -> new IllegalArgumentException("노래가 존재하지 않습니다"));
     }
 }

@@ -1,10 +1,8 @@
-package com.example.musicdiary.dto.RequestDTO;
+package com.example.musicdiary.presentation.dto.request;
 
-import com.example.musicdiary.dto.UserDto;
+import com.example.musicdiary.presentation.dto.UserDto;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-
-import java.util.List;
 
 
 @Data
