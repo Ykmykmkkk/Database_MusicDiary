@@ -6,6 +6,7 @@ class AuthService {
   static final hostAddress = dotenv.env['API_ADDRESS'];
 
   static Future<bool> duplicate(String username) async {
+    print("hello");
     var duplicateCheck = false;
     var headers = {'Content-Type': 'application/json'};
     var request = http.Request(
@@ -26,8 +27,8 @@ class AuthService {
     required String email,
   }) async {
     var headers = {'Content-Type': 'application/json'};
-    var request =
-        http.Request('POST', Uri.parse('http://$hostAddress:8080/user/create'));
+    var request = http.Request(
+        'POST', Uri.parse('http://$hostAddress:8080/user/register'));
     request.body = jsonEncode({
       "username": username,
       "password": password,

@@ -20,18 +20,20 @@ public class SongEntity {
     @Column(name = "song_id")
     private long id;
 
-    @Size(max=1000)
+    @Size(max = 30) // DB와 일치
+    @Column(name = "title", length = 30, nullable = false)
     private String title;
-    @Column(nullable = false)
+
+    @Size(max = 30)
+    @Column(name = "artist", length = 30)
     private String artist;
+
     @Column(nullable = false)
     private String album;
+
     @Column(nullable = false)
     private LocalDate releaseDate;
 
     @Column(nullable = false)
     private String durationTime;
-
-
-
 }

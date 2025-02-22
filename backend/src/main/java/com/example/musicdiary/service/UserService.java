@@ -2,8 +2,8 @@ package com.example.musicdiary.service;
 
 import com.example.musicdiary.entity.UserEntity;
 import com.example.musicdiary.presentation.dto.request.DuplicateUserRequestDto;
-import com.example.musicdiary.presentation.dto.request.LoginRequestDto;
 import com.example.musicdiary.presentation.dto.UserDto;
+import com.example.musicdiary.presentation.dto.request.LoginRequestDto;
 import com.example.musicdiary.repository.UserRepository;
 
 import jakarta.validation.ConstraintViolationException;
@@ -12,7 +12,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +24,7 @@ import java.util.ArrayList;
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final ValidationService validationService;
 
     @Override
@@ -34,7 +34,7 @@ public class UserService implements UserDetailsService {
                 true,true,new ArrayList<>());
     }
     @Transactional
-    public void createUser(UserDto userDto) {
+    public void registerUser(UserDto userDto) {
         try {
             UserEntity userEntity = userDto.toEntity();
             validationService.checkValid(userEntity);
@@ -51,7 +51,7 @@ public class UserService implements UserDetailsService {
         String rawPassword = loginRequestDto.getPassword();
         UserEntity userEntity = userRepository.findByUsernameAndDeleted(username, false)
                 .orElseThrow(() -> new IllegalArgumentException("아이디 또는 비밀번호가 틀렸습니다."));
-        if (!passwordEncoder.matches(rawPassword, userEntity.getPassword())) {
+        if (!bCryptPasswordEncoder.matches(rawPassword, userEntity.getPassword())) {
             throw new IllegalArgumentException("아이디 또는 비밀번호가 틀렸습니다.");
         }
     }
