@@ -11,6 +11,6 @@ spring:
       maximum-pool-size: 20
       idle-timeout: 30000
       pool-name: YourHikariCP
-logging:
-  level:
-    com.zaxxer.hikari: DEBUG
+  jpa:
+    hibernate:
+      ddl-auto: create-drop

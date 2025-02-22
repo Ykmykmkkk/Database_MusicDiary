@@ -6,7 +6,7 @@ import lombok.Data;
 
 
 @Data
-public class CreateUserRequestDto {
+public class RegisterUserRequestDto {
     @NotNull // NotNull: 널 값 불가, NotEmpty: 널 및 "" 불가, NotBlank: 널, "", " " 불가
     private String username;
     @NotNull

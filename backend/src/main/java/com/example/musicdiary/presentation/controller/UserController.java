@@ -1,6 +1,6 @@
 package com.example.musicdiary.presentation.controller;
 
-import com.example.musicdiary.presentation.dto.request.CreateUserRequestDto;
+import com.example.musicdiary.presentation.dto.request.RegisterUserRequestDto;
 import com.example.musicdiary.presentation.dto.request.DuplicateUserRequestDto;
 import com.example.musicdiary.presentation.dto.request.LoginRequestDto;
 import com.example.musicdiary.service.UserService;
@@ -22,18 +22,18 @@ public class UserController {
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
-    @PostMapping("/create")
-    public ResponseEntity<?> createUser(@Valid @RequestBody CreateUserRequestDto createUserDto) {
+    @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterUserRequestDto registerUserRequestDto) {
         // try catch 문을 사용하지 않고 uncheked exception 처리.
         // 반드시 컴파일 단계에서 예외 처리할 이유나 해결할 로직이 없으니까 GlobalExveptionHandler를 통해 관리
-        userService.createUser(createUserDto.toServiceDto(passwordEncoder.encode(createUserDto.getPassword())));
+        userService.registerUser(registerUserRequestDto.toServiceDto(passwordEncoder.encode(registerUserRequestDto.getPassword())));
         return ResponseEntity.status(HttpStatus.CREATED).body("UserEntity created successfully");
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequestDto) {
         try {
-            userService.login(loginRequestDto);
+            //userService.login(loginRequestDto);
             return ResponseEntity.status(HttpStatus.OK).body("login success");
         } catch (UsernameNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -46,8 +46,10 @@ public class UserController {
     public ResponseEntity<?> checkDuplicate(@RequestBody DuplicateUserRequestDto duplicateRequestDto) {
         try {
             userService.checkDuplicate(duplicateRequestDto);
+            System.out.println("성공");
             return ResponseEntity.status(HttpStatus.OK).body("Duplicate check success");
         } catch (Exception e) {
+            System.out.println("실패");
             return ResponseEntity.badRequest().body("Duplicate check failed");
         }
     }

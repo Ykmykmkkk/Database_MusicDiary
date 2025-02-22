@@ -21,11 +21,11 @@ public class UserEntity {
     @Column(name = "user_id")
     long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, length = 30)
     @Size(min=1, max=10)
     private String username;
 
-    @Column(nullable = false)
+    @Column(nullable = false) // JPA annotation
     @Size(min=1, max=10) // 서비스 레이어에서 도메인 객체에 대한 유효성 검사를 진행할 때 쓰임
     private String password;
 
