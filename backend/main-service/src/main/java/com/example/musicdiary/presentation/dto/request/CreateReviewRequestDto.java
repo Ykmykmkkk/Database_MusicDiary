@@ -1,4 +1,4 @@
-package com.example.musicdiary.common.dto.request;
+package com.example.musicdiary.presentation.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;

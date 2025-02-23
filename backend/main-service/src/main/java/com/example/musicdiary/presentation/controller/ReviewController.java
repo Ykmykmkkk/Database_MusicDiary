@@ -1,7 +1,7 @@
 package com.example.musicdiary.presentation.controller;
 
-import com.example.musicdiary.common.dto.request.CreateReviewRequestDto;
-import com.example.musicdiary.common.dto.request.SetReviewLikeRequestDto;
+import com.example.musicdiary.presentation.dto.request.CreateReviewRequestDto;
+import com.example.musicdiary.presentation.dto.request.SetReviewLikeRequestDto;
 import com.example.musicdiary.service.LikedReviewService;
 import com.example.musicdiary.service.ReviewService;
 import lombok.RequiredArgsConstructor;
