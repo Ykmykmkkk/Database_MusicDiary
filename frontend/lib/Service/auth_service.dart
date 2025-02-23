@@ -41,6 +41,9 @@ class AuthService {
     if (response.statusCode == 201) {
       return true;
     } else {
+      response.stream
+          .bytesToString()
+          .then((value) => print(value)); // response body에 담긴 error message 출력
       return false;
     }
   }
@@ -49,7 +52,7 @@ class AuthService {
       {required String username, required String password}) async {
     var headers = {'Content-Type': 'application/json'};
     var request =
-        http.Request('POST', Uri.parse('http://$hostAddress:8080/user/login'));
+        http.Request('POST', Uri.parse('http://$hostAddress:8080/login'));
     request.body = json.encode({
       "username": username,
       "password": password,
@@ -65,16 +68,15 @@ class AuthService {
         client.close(); // 클라이언트 닫기
         throw Exception('Request timeout');
       });
-      print("내가왔다");
-      print(username);
-      print(password);
-
       if (response.statusCode == 200) {
         return true;
       } else if (response.statusCode == 400) {
         return false;
       } else {
         print(response.statusCode); // 기타 로그인 Service error
+        response.stream.bytesToString().then(
+            (value) => print(value)); // response body에 담긴 error message 출력
+
         return false;
       }
     } catch (e) {
