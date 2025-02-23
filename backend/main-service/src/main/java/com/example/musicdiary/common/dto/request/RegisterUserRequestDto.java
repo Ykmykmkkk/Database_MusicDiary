@@ -1,6 +1,6 @@
-package com.example.musicdiary.presentation.dto.request;
+package com.example.musicdiary.common.dto.request;
 
-import com.example.musicdiary.presentation.dto.UserDto;
+import com.example.musicdiary.common.dto.UserDto;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 

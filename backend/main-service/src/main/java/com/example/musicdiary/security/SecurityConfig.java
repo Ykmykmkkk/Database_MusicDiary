@@ -1,4 +1,4 @@
-package com.example.musicdiary.config;
+package com.example.musicdiary.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

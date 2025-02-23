@@ -1,8 +1,11 @@
-package com.example.musicdiary.config;
+package com.example.musicdiary.security;
 
-import com.example.musicdiary.presentation.dto.request.LoginRequestDto;
+import com.example.musicdiary.common.dto.UserDto;
+import com.example.musicdiary.domain.UserEntity;
+import com.example.musicdiary.common.dto.request.LoginRequestDto;
 import com.example.musicdiary.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,9 +17,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -58,11 +61,16 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         response.getWriter().write(errorMessage);
     }
 
-    @Override // 인증 성공인 경우
+    @Override // 인증 성공인 경우 username을 가져와 그것을 기반으로 jwt Token을 생성할 것이다
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
                                             FilterChain chain, Authentication authResult)
             throws IOException, ServletException {
-        String userName = ((User)authResult.getPrincipal()).getUsername();
-        // Authentication 인터페이스의 getPrincipal() 메서드가 반환하는 객체를 User 클래스로 캐스팅하
+        String username = ((User)authResult.getPrincipal()).getUsername();
+        // Authentication 인터페이스의 getPrincipal() 메서드가 반환하는 객체를 User 클래스로 캐스팅하기
+        UserDto userdto = userService.getUserDtoByUsername(username);
+        String token = Jwts.builder().
+                setSubject(String.valueOf(userdto.getId()))
+                .setExpiration(new Date(System.currentTimeMillis() + Long.parseLong(env.getProperty("token.expiration_time"))))
+                .compact();
     }
 }

@@ -1,6 +1,6 @@
 package com.example.musicdiary.service;
 
-import com.example.musicdiary.entity.UserEntity;
+import com.example.musicdiary.domain.UserEntity;
 import com.example.musicdiary.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.AuthorityUtils;

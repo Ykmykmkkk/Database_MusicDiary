@@ -1,8 +1,8 @@
 package com.example.musicdiary.service;
 
-import com.example.musicdiary.entity.*;
-import com.example.musicdiary.presentation.dto.request.SetSongLikeRequestDto;
-import com.example.musicdiary.presentation.dto.response.SongResponseDto;
+import com.example.musicdiary.domain.*;
+import com.example.musicdiary.common.dto.request.SetSongLikeRequestDto;
+import com.example.musicdiary.common.dto.response.SongResponseDto;
 import com.example.musicdiary.repository.LikedSongRepository;
 import com.example.musicdiary.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;

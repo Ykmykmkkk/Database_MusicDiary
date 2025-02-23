@@ -1,4 +1,4 @@
-package com.example.musicdiary.config;
+package com.example.musicdiary.security;
 
 import com.example.musicdiary.service.UserService;
 import lombok.RequiredArgsConstructor;

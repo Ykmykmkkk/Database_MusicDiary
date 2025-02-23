@@ -1,8 +1,8 @@
-package com.example.musicdiary.presentation.dto;
+package com.example.musicdiary.common.dto;
 
-import com.example.musicdiary.entity.LikedReviewEntity;
-import com.example.musicdiary.entity.LikedSongEntity;
-import com.example.musicdiary.entity.UserEntity;
+import com.example.musicdiary.domain.LikedReviewEntity;
+import com.example.musicdiary.domain.LikedSongEntity;
+import com.example.musicdiary.domain.UserEntity;
 import lombok.Builder;
 import lombok.Data;
 
@@ -32,6 +32,4 @@ public class UserDto {
                 .likedReviewEntities(likedReviewEntities)
                 .build();
         }
-
-
 }

@@ -1,6 +1,6 @@
 package com.example.musicdiary.repository;
 
-import com.example.musicdiary.entity.ReviewEntity;
+import com.example.musicdiary.domain.ReviewEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

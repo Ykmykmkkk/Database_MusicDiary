@@ -1,8 +1,8 @@
 package com.example.musicdiary.repository;
 
-import com.example.musicdiary.entity.LikedReviewEntity;
-import com.example.musicdiary.entity.ReviewEntity;
-import com.example.musicdiary.entity.UserEntity;
+import com.example.musicdiary.domain.LikedReviewEntity;
+import com.example.musicdiary.domain.ReviewEntity;
+import com.example.musicdiary.domain.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
