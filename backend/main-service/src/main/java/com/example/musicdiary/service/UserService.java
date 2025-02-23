@@ -1,13 +1,12 @@
 package com.example.musicdiary.service;
 
+import com.example.musicdiary.common.UserDto;
 import com.example.musicdiary.domain.UserEntity;
-import com.example.musicdiary.common.dto.request.DuplicateUserRequestDto;
-import com.example.musicdiary.common.dto.UserDto;
-import com.example.musicdiary.common.dto.request.LoginRequestDto;
 import com.example.musicdiary.repository.UserRepository;
 
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -26,7 +25,7 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final ValidationService validationService;
-
+    private final ModelMapper modelMapper;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserEntity userEntity = userRepository.findByUsername(username).orElseThrow(
@@ -38,7 +37,22 @@ public class UserService implements UserDetailsService {
     @Transactional
     public void registerUser(UserDto userDto) {
         try {
-            UserEntity userEntity = userDto.toEntity();
+            String username = userDto.getUsername();
+            String password = userDto.getPassword();
+            String email = userDto.getEmail();  // 예시로 추가
+            String name = userDto.getName();
+
+            // 비밀번호 인코딩
+            String encodedPassword = bCryptPasswordEncoder.encode(password);
+
+            // UserEntity 생성 및 데이터 설정
+            UserEntity userEntity = UserEntity.builder()
+                    .username(username)
+                    .password(encodedPassword)
+                    .email(email)  // 필요하면 추가
+                    .name(name)
+                    .build();
+
             validationService.checkValid(userEntity);
             userRepository.save(userEntity);
         } catch (ConstraintViolationException ex) {
@@ -47,8 +61,8 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public void checkDuplicate(DuplicateUserRequestDto duplicateUserRequestDto) {
-        String username = duplicateUserRequestDto.getUsername();
+    public void checkDuplicate(UserDto duplicateUserDto) {
+        String username = duplicateUserDto.getUsername();
         isDuplicated(username);
     }
 
@@ -68,7 +82,9 @@ public class UserService implements UserDetailsService {
     public UserDto getUserDtoByUsername(String username) {
         UserEntity userEntity = userRepository.findByUsernameAndDeleted(username, false)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
-        return UserDto.builder().id(userEntity.getId()).build();
+
+        return UserDto.builder().id(userEntity.getId()).username(userEntity.getUsername()).build();
+
     }
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void deleteUser(String username) {

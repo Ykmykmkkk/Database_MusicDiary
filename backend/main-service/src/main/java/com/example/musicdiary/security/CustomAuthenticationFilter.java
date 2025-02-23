@@ -1,8 +1,8 @@
 package com.example.musicdiary.security;
 
-import com.example.musicdiary.common.dto.UserDto;
-import com.example.musicdiary.domain.UserEntity;
-import com.example.musicdiary.common.dto.request.LoginRequestDto;
+import com.example.musicdiary.common.UserDto;
+import com.example.musicdiary.common.UserDto;
+import com.example.musicdiary.presentation.dto.request.LoginRequestDto;
 import com.example.musicdiary.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
@@ -67,10 +67,11 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
             throws IOException, ServletException {
         String username = ((User)authResult.getPrincipal()).getUsername();
         // Authentication 인터페이스의 getPrincipal() 메서드가 반환하는 객체를 User 클래스로 캐스팅하기
-        UserDto userdto = userService.getUserDtoByUsername(username);
-        String token = Jwts.builder().
-                setSubject(String.valueOf(userdto.getId()))
-                .setExpiration(new Date(System.currentTimeMillis() + Long.parseLong(env.getProperty("token.expiration_time"))))
-                .compact();
+        UserDto userdDto = userService.getUserDtoByUsername(username);
+
+//        String token = Jwts.builder().
+//                setSubject(String.valueOf(userdDto.getId()))
+//                .setExpiration(new Date(System.currentTimeMillis() + Long.parseLong(env.getProperty("token.expiration_time"))))
+//                .compact();
     }
 }

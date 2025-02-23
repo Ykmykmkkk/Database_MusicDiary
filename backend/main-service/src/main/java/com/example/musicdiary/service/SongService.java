@@ -1,8 +1,8 @@
 package com.example.musicdiary.service;
 
 import com.example.musicdiary.domain.SongEntity;
-import com.example.musicdiary.common.dto.request.CreateSongRequestDto;
-import com.example.musicdiary.common.dto.response.SongResponseDto;
+import com.example.musicdiary.presentation.dto.request.CreateSongRequestDto;
+import com.example.musicdiary.presentation.dto.response.SongResponseDto;
 import com.example.musicdiary.repository.SongRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
