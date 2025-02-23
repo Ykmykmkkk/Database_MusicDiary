@@ -1,9 +1,9 @@
 package com.example.musicdiary.service;
 
-import com.example.musicdiary.entity.UserEntity;
-import com.example.musicdiary.presentation.dto.request.DuplicateUserRequestDto;
-import com.example.musicdiary.presentation.dto.UserDto;
-import com.example.musicdiary.presentation.dto.request.LoginRequestDto;
+import com.example.musicdiary.domain.UserEntity;
+import com.example.musicdiary.common.dto.request.DuplicateUserRequestDto;
+import com.example.musicdiary.common.dto.UserDto;
+import com.example.musicdiary.common.dto.request.LoginRequestDto;
 import com.example.musicdiary.repository.UserRepository;
 
 import jakarta.validation.ConstraintViolationException;
@@ -47,17 +47,6 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    @Transactional
-    public void login(LoginRequestDto loginRequestDto) {
-        String username = loginRequestDto.getUsername();
-        String rawPassword = loginRequestDto.getPassword();
-        UserEntity userEntity = userRepository.findByUsernameAndDeleted(username, false)
-                .orElseThrow(() -> new IllegalArgumentException("아이디 또는 비밀번호가 틀렸습니다."));
-        if (!bCryptPasswordEncoder.matches(rawPassword, userEntity.getPassword())) {
-            throw new IllegalArgumentException("아이디 또는 비밀번호가 틀렸습니다.");
-        }
-    }
-
     public void checkDuplicate(DuplicateUserRequestDto duplicateUserRequestDto) {
         String username = duplicateUserRequestDto.getUsername();
         isDuplicated(username);
@@ -73,6 +62,13 @@ public class UserService implements UserDetailsService {
     public UserEntity getUserEntityByUsername(String username) {
         return userRepository.findByUsernameAndDeleted(username, false)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+    }
+
+    @Transactional(readOnly = true)
+    public UserDto getUserDtoByUsername(String username) {
+        UserEntity userEntity = userRepository.findByUsernameAndDeleted(username, false)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+        return UserDto.builder().id(userEntity.getId()).build();
     }
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void deleteUser(String username) {

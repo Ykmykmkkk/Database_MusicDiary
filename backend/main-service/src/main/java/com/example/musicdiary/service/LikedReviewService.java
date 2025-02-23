@@ -1,10 +1,10 @@
 package com.example.musicdiary.service;
 
-import com.example.musicdiary.entity.LikedReviewEntity;
-import com.example.musicdiary.entity.ReviewEntity;
-import com.example.musicdiary.entity.UserEntity;
-import com.example.musicdiary.presentation.dto.request.SetReviewLikeRequestDto;
-import com.example.musicdiary.presentation.dto.response.ReviewResponseDto;
+import com.example.musicdiary.domain.LikedReviewEntity;
+import com.example.musicdiary.domain.ReviewEntity;
+import com.example.musicdiary.domain.UserEntity;
+import com.example.musicdiary.common.dto.request.SetReviewLikeRequestDto;
+import com.example.musicdiary.common.dto.response.ReviewResponseDto;
 import com.example.musicdiary.repository.LikedReviewRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;

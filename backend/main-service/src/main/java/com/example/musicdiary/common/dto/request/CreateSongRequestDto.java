@@ -1,6 +1,6 @@
-package com.example.musicdiary.presentation.dto.request;
+package com.example.musicdiary.common.dto.request;
 
-import com.example.musicdiary.entity.SongEntity;
+import com.example.musicdiary.domain.SongEntity;
 import lombok.Data;
 
 import java.time.LocalDate;

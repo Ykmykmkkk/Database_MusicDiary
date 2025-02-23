@@ -1,4 +1,4 @@
-package com.example.musicdiary.entity;
+package com.example.musicdiary.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;

@@ -1,10 +1,10 @@
 package com.example.musicdiary.service;
 
-import com.example.musicdiary.entity.ReviewEntity;
-import com.example.musicdiary.entity.SongEntity;
-import com.example.musicdiary.entity.UserEntity;
-import com.example.musicdiary.presentation.dto.request.CreateReviewRequestDto;
-import com.example.musicdiary.presentation.dto.response.ReviewResponseDto;
+import com.example.musicdiary.domain.ReviewEntity;
+import com.example.musicdiary.domain.SongEntity;
+import com.example.musicdiary.domain.UserEntity;
+import com.example.musicdiary.common.dto.request.CreateReviewRequestDto;
+import com.example.musicdiary.common.dto.response.ReviewResponseDto;
 import com.example.musicdiary.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

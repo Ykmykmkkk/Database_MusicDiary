@@ -1,14 +1,12 @@
 package com.example.musicdiary.presentation.controller;
 
-import com.example.musicdiary.presentation.dto.request.RegisterUserRequestDto;
-import com.example.musicdiary.presentation.dto.request.DuplicateUserRequestDto;
-import com.example.musicdiary.presentation.dto.request.LoginRequestDto;
+import com.example.musicdiary.common.dto.request.RegisterUserRequestDto;
+import com.example.musicdiary.common.dto.request.DuplicateUserRequestDto;
 import com.example.musicdiary.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
