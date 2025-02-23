@@ -1,0 +1,21 @@
+version: "3"
+services:
+  mysqldb:
+    image: mysql
+    container_name: mysqldb
+    environment:
+      MYSQL_ROOT_PASSWORD: '0000'
+      MYSQL_DATABASE: musicdiary
+    build: .
+    volumes:
+      - db:/var/lib/mysql
+    ports:
+      - 3307:3306
+volumes:
+  db:
+
+
+
+
+
+

@@ -39,7 +39,7 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   void _checkCredentials() async {
-    var message = '에러';
+    var message = '';
 
     // 이메일 형식을 확인하기 위한 정규 표현식
     String pattern =
@@ -61,7 +61,16 @@ class _RegisterPageState extends State<RegisterPage> {
       message = '비밀번호를 입력해주세요.';
     } else if (controllerPwdChk.text.isEmpty) {
       message = '비밀번호를 확인해주세요.';
-    } else if (checkpassword && checkduplicate) {
+    } else if (!checkduplicate) {
+      message = '아이디 중복 확인을 해주세요.';
+    } else if (!checkpassword) {
+      message = '비밀번호가 일치하지 않습니다.';
+    }
+    if (message.isNotEmpty) {
+      showErrorDialog(context, message);
+    }
+
+    if (checkpassword && checkduplicate) {
       if (lastCheckedId != controllerUsername.text) {
         // lastCheckedId와 실제 제출된 값이 다른 경우 중복확인을 새로 하도록 오류메세지
         message = '아이디 중복확인을 다시 해주세요.';
@@ -76,14 +85,17 @@ class _RegisterPageState extends State<RegisterPage> {
         try {
           await AuthService.register(
               username: id, password: pwd, name: name, email: email);
-        } catch (e) {}
+          if (mounted) {
+            Navigator.pop(context);
+          }
+        } catch (e) {
+          message = '회원가입에 실패했습니다.';
+          if (mounted) {
+            showErrorDialog(context, message);
+          }
+        }
       }
-    } else if (checkduplicate) {
-      message = '비밀번호가 일치하지 않습니다.';
-    } else {
-      message = '아이디 중복 확인을 해주세요.';
     }
-    showErrorDialog(context, message);
   }
 
   @override
@@ -417,7 +429,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                       ),
                       child: const Text(
-                        '다음',
+                        '제출',
                         style: TextStyle(
                           color: Colors.black87,
                           fontSize: 20,
