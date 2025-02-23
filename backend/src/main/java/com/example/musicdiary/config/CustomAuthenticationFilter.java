@@ -45,6 +45,19 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         }
     }
 
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        String errorMessage = "{\"error\": \"로그인 실패: " + failed.getMessage() + "\"}";
+        // loadUserByUsername 서비스에서 throw한 UsernameNotFoundException(해당 회원이 존재하지 않습니다)가
+        // failed 객체로 넘어오길 기대했지만, AuthenticationProvider에서 보안 상의 이유로 아이디가 틀렸는지 비밀번호가 틀렸는지
+        // 구체적으로 설명해주지 않기 위해 setHideUserNotFoundExceptions(true); 설정이 default로 되어 있다. 보안 상 이유!!
+        // *UsernameNotFoundException은 AuthenticationException의 하위 클래스이다.
+        response.getWriter().write(errorMessage);
+    }
+
     @Override // 인증 성공인 경우
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
                                             FilterChain chain, Authentication authResult)

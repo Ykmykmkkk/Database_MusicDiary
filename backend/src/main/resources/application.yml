@@ -13,4 +13,4 @@ spring:
       pool-name: YourHikariCP
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update

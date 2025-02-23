@@ -29,19 +29,6 @@ public class UserController {
         userService.registerUser(registerUserRequestDto.toServiceDto(passwordEncoder.encode(registerUserRequestDto.getPassword())));
         return ResponseEntity.status(HttpStatus.CREATED).body("UserEntity created successfully");
     }
-
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequestDto) {
-        try {
-            //userService.login(loginRequestDto);
-            return ResponseEntity.status(HttpStatus.OK).body("login success");
-        } catch (UsernameNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
     @PostMapping("/duplicate")
     public ResponseEntity<?> checkDuplicate(@RequestBody DuplicateUserRequestDto duplicateRequestDto) {
         try {

@@ -25,12 +25,11 @@ public class UserEntity {
     @Size(min=1, max=10)
     private String username;
 
-    @Column(nullable = false) // JPA annotation
-    @Size(min=1, max=10) // 서비스 레이어에서 도메인 객체에 대한 유효성 검사를 진행할 때 쓰임
+    @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false) // 데이터베이스 테이블에서 not null 옵션 설정
-    @Size(min=1, max=10) // 서비스 레이어에서 도메인 객체에 대한 유효성 검사를 진행할 때 쓰임
+    @Column(nullable = false) //  // JPA annotation으로 데이터베이스 테이블에서 not null 옵션 설정
+    @Size(min=1, max=10) // Validation annotation으로 서비스 레이어에서 도메인 객체에 대한 유효성 검사를 진행할 때 쓰임
     private String name;
 
     @Column(nullable = false)
