@@ -22,7 +22,8 @@ public class LikedReviewService {
     private final ReviewService reviewService;
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void setReviewLike(String username, ReviewDto setReviewLikeDto) {
-        boolean isExist = likedReviewRepository.existsByUserEntity_UsernameAndReviewEntity_ReviewDate(setReviewLikeDto.getUsername(),setReviewLikeDto.getReviewDate());
+        boolean isExist = likedReviewRepository.existsByUserEntity_UsernameAndReviewEntity_ReviewDate(
+                setReviewLikeDto.getUsername(),setReviewLikeDto.getReviewDate());
         if(isExist){
             throw new IllegalArgumentException("Already liked this reviewEntity");
         }
@@ -52,7 +53,8 @@ public class LikedReviewService {
                         .songTitle(review.getSongEntity().getTitle())
                         .songArtist(review.getSongEntity().getArtist())
                         .isPublic(review.getIsPublic())
-                .build()).toList();
+                        .isLike(true)
+                        .build()).toList();
     }
     @Transactional
     public void setReviewUnlike(String username, ReviewDto setReviewLikeDto) {
@@ -68,5 +70,4 @@ public class LikedReviewService {
         // 삭제 처리
         likedReviewRepository.delete(likedReviewEntity);
     }
-
 }
