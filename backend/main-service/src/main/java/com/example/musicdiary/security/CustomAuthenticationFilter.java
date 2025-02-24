@@ -6,6 +6,8 @@ import com.example.musicdiary.presentation.dto.request.LoginRequestDto;
 import com.example.musicdiary.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -65,13 +67,25 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
                                             FilterChain chain, Authentication authResult)
             throws IOException, ServletException {
-        String username = ((User)authResult.getPrincipal()).getUsername();
-        // Authentication 인터페이스의 getPrincipal() 메서드가 반환하는 객체를 User 클래스로 캐스팅하기
-        UserDto userdDto = userService.getUserDtoByUsername(username);
 
-//        String token = Jwts.builder().
-//                setSubject(String.valueOf(userdDto.getId()))
-//                .setExpiration(new Date(System.currentTimeMillis() + Long.parseLong(env.getProperty("token.expiration_time"))))
-//                .compact();
+        if (!(authResult.getPrincipal() instanceof CustomUserDetails customUserDetails)) {
+            throw new IllegalStateException("Principal must be an instance of CustomUserDetails");
+        }
+
+        byte[] keyBytes = env.getProperty("token.secret").getBytes();
+        if (keyBytes.length < 64) {
+            throw new IllegalArgumentException("Secret key must be at least 512 bits (64 bytes) for HS512");
+        }
+        var key = Keys.hmacShaKeyFor(keyBytes);
+
+        String token = Jwts.builder()
+                .setSubject(String.valueOf(customUserDetails.getId()))
+                .setExpiration(new Date(System.currentTimeMillis() + Long.parseLong(env.getProperty("token.expiration_time"))))
+                .signWith(key, SignatureAlgorithm.HS512)
+                .compact();
+
+        response.addHeader("token", token);
+        response.addHeader("userId", String.valueOf(customUserDetails.getId()));
+
     }
 }

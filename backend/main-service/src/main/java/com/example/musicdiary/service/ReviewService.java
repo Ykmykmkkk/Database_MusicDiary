@@ -7,14 +7,12 @@ import com.example.musicdiary.domain.SongEntity;
 import com.example.musicdiary.domain.UserEntity;
 import com.example.musicdiary.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -22,32 +20,15 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final UserService userService;
     private final SongService songService;
-    @Lazy
-    private final LikedReviewService likedReviewService;
-
     @Transactional(readOnly = true)
     public List<ReviewDto> getAllReview(String username) {
         List<ReviewEntity> reviewEntities = reviewRepository.findAllByUserEntity_username(username);
-        List<ReviewDto> reviewDtoList = toReviewDtoList(reviewEntities);
-
-        List<ReviewDto> checkReviewDtoList = checkLikedReview(username, reviewDtoList);
-
         if(reviewEntities.isEmpty()){
             throw new RuntimeException("No reviewEntity found");
         }
-        return checkReviewDtoList;
+        return toReviewDtoList(reviewEntities);
     }
 
-    public List<ReviewDto> checkLikedReview(String username, List<ReviewDto> reviewDtoList){
-        List<ReviewDto> myLikedReviewDtoList = likedReviewService.getLikedReviewListByUsername(username);
-        return reviewDtoList.stream().map(reviewDto -> {
-                    if (myLikedReviewDtoList.contains(reviewDto)) {
-                        reviewDto.setIsLike(true);
-                    }
-                    return reviewDto;
-                }
-        ).collect(Collectors.toList());
-    }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void createReview(ReviewDto createReviewDto) {
@@ -107,13 +88,7 @@ public class ReviewService {
                 .songArtist(reviewEntity.getSongEntity().getArtist())
                 .reviewContent(reviewEntity.getReviewContent())
                 .isPublic(reviewEntity.getIsPublic())
-                .isLike(isLikedReview(username, reviewEntity.getId()))
                 .build();
-    }
-
-    public boolean isLikedReview(String username, long reviewId){
-        List<ReviewDto> myLikedReviewDtoList = likedReviewService.getLikedReviewListByUsername(username);
-        return myLikedReviewDtoList.stream().anyMatch(reviewDto -> reviewDto.getId()==reviewId);
     }
 
     public List<ReviewDto> toReviewDtoList(List<ReviewEntity> reviewEntities) {
