@@ -75,7 +75,9 @@ public class ReviewService {
     public ReviewDto getReviewDate(String username, LocalDate date) {
         ReviewEntity reviewEntity = reviewRepository.findByUserEntity_usernameAndReviewDate(username, date).
                 orElseThrow(() -> new IllegalArgumentException("리뷰가 존재하지 않습니다"));
-        return modelMapper.map(reviewEntity,ReviewDto.class);
+        ReviewDto reviewDto = modelMapper.map(reviewEntity,ReviewDto.class);
+        reviewDto.setUsername(reviewEntity.getUserEntity().getUsername());
+        return reviewDto;
     }
 
     public List<ReviewDto> toReviewDtoList(List<ReviewEntity> reviewEntities) {

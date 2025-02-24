@@ -8,5 +8,5 @@ import java.time.LocalDate;
 @Data
 public class SetReviewLikeRequestDto {
      private LocalDate reviewDate;
-     private String reviewWriter;
+     private String username;
 }

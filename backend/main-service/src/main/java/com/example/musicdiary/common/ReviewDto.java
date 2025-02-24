@@ -2,13 +2,17 @@ package com.example.musicdiary.common;
 
 
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor // ModelMapper에서 필요
 public class ReviewDto {
     private Long id;              // 리뷰 ID
     private LocalDate reviewDate; // 리뷰 작성 날짜

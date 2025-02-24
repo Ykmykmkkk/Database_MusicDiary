@@ -28,13 +28,14 @@ public class ReviewController {
     public ResponseEntity<?> createReview(@RequestBody CreateReviewRequestDto createReviewRequestDto) {
         try {
             ReviewDto createReviewDto = modelMapper.map(createReviewRequestDto, ReviewDto.class);
-            reviewService.createReview2(createReviewDto);
+            reviewService.createReview(createReviewDto);
             return ResponseEntity.status(HttpStatus.CREATED).body("reviewEntity created");
         }
         catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
     @GetMapping("/{date}")
     public ResponseEntity<?> getReviewDate(@RequestHeader("username") String username, @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
         try {
@@ -84,6 +85,7 @@ public class ReviewController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
     @PostMapping("/unlike")
     public ResponseEntity<?> setReviewUnLike(@RequestHeader("username") String username, @RequestBody SetReviewLikeRequestDto setReviewLikeRequestDto) {
         try {
@@ -100,7 +102,11 @@ public class ReviewController {
     @GetMapping("/like")
     public ResponseEntity<?> getReviewLike(@RequestHeader("username") String username) {
         try {
-            return ResponseEntity.ok(likedReviewService.getLikedReviewListByUsername(username));
+            List<ReviewDto> likedReviewDtoList = likedReviewService.getLikedReviewListByUsername(username);
+            List<ReviewResponseDto> reviewResponseDtoList = likedReviewDtoList.stream()
+                    .map(reviewDto -> modelMapper.map(reviewDto, ReviewResponseDto.class)).toList();
+
+            return ResponseEntity.ok(reviewResponseDtoList);
         }
         catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

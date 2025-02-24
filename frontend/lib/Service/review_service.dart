@@ -70,7 +70,7 @@ class ReviewService {
         http.Request('POST', Uri.parse('http://$hostAddress:8080/review/like'));
     request.body = json.encode({
       "reviewDate": reviewDate,
-      "reviewWriter": reviewWriter,
+      "username": reviewWriter,
     });
     request.headers.addAll(headers);
     try {
