@@ -1,16 +1,16 @@
 package com.example.musicdiary.service;
 
-import com.example.musicdiary.domain.*;
-import com.example.musicdiary.presentation.dto.request.SetSongLikeRequestDto;
-import com.example.musicdiary.presentation.dto.response.SongResponseDto;
+import com.example.musicdiary.common.SongDto;
+
+import com.example.musicdiary.domain.LikedSongEntity;
+import com.example.musicdiary.domain.SongEntity;
+import com.example.musicdiary.domain.UserEntity;
 import com.example.musicdiary.repository.LikedSongRepository;
-import com.example.musicdiary.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -19,18 +19,17 @@ public class LikedSongService {
     private final LikedSongRepository likedSongRepository;
     private final UserService userService;
     private final SongService songService;
-    private final UserRepository userRepository;
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public void setSongLike(String username, SetSongLikeRequestDto setSongLikeRequestDto) {
+    public void setSongLike(String username, SongDto setSongLikeDto) {
 
-        boolean isExist = likedSongRepository.existsByUserEntity_UsernameAndSongEntity_TitleAndSongEntity_Artist(username, setSongLikeRequestDto.getTitle(), setSongLikeRequestDto.getArtist());
+        boolean isExist = likedSongRepository.existsByUserEntity_UsernameAndSongEntity_TitleAndSongEntity_Artist(username, setSongLikeDto.getTitle(), setSongLikeDto.getArtist());
         if(isExist){
             throw new IllegalArgumentException("Already liked this song");
         }
         UserEntity userEntity = userService.getUserEntityByUsername(username);
-        String title = setSongLikeRequestDto.getTitle();
-        String artist = setSongLikeRequestDto.getArtist();
+        String title = setSongLikeDto.getTitle();
+        String artist = setSongLikeDto.getArtist();
         SongEntity songEntity = songService.getSongEntityByTitleAndArtist(title, artist);
         LikedSongEntity likedSongEntity = LikedSongEntity.builder()
                 .userEntity(userEntity)
@@ -39,26 +38,27 @@ public class LikedSongService {
         likedSongRepository.save(likedSongEntity);
     }
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public void setSongUnlike(String username, SetSongLikeRequestDto setSongLikeRequestDto) {
+    public void setSongUnlike(String username, SongDto setSongLikeDto) {
         UserEntity userEntity = userService.getUserEntityByUsername(username);
-        String title = setSongLikeRequestDto.getTitle();
-        String artist = setSongLikeRequestDto.getArtist();
+        String title = setSongLikeDto.getTitle();
+        String artist = setSongLikeDto.getArtist();
         SongEntity song = songService.getSongEntityByTitleAndArtist(title, artist);
         LikedSongEntity likedSongEntity = likedSongRepository.findByUserEntityAndSongEntity(userEntity, song)
                 .orElseThrow(() -> new EntityNotFoundException("LikedSongEntity not found"));
         likedSongRepository.delete(likedSongEntity);
     }
     @Transactional(readOnly = true)
-    public List<SongResponseDto> getLikedSongListByUsername(String username) {
-        List<SongEntity> likedSongs = likedSongRepository.findAllByUser_Username(username).stream()
+    public List<SongDto> getLikedSongListByUsername(String username) {
+        return toSongDtoList(
+                likedSongRepository.findAllByUser_Username(username).stream()
                 .map(LikedSongEntity::getSongEntity)
-                .toList();
-        return toResponseDtoList(likedSongs);
+                .toList()
+        );
     }
 
-    public List<SongResponseDto> toResponseDtoList(List<SongEntity> songs) {
+    public List<SongDto> toSongDtoList(List<SongEntity> songs) {
         return songs.stream()
-                .map(song -> SongResponseDto.builder()
+                .map(song -> SongDto.builder()
                         .title(song.getTitle())
                         .artist(song.getArtist())
                         .releaseDate(song.getReleaseDate())

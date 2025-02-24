@@ -6,7 +6,6 @@ import com.example.musicdiary.repository.UserRepository;
 
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -25,7 +24,6 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final ValidationService validationService;
-    private final ModelMapper modelMapper;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserEntity userEntity = userRepository.findByUsername(username).orElseThrow(
@@ -37,20 +35,13 @@ public class UserService implements UserDetailsService {
     @Transactional
     public void registerUser(UserDto userDto) {
         try {
-            String username = userDto.getUsername();
-            String password = userDto.getPassword();
-            String email = userDto.getEmail();  // 예시로 추가
-            String name = userDto.getName();
+            String encodedPassword = bCryptPasswordEncoder.encode(userDto.getPassword());
 
-            // 비밀번호 인코딩
-            String encodedPassword = bCryptPasswordEncoder.encode(password);
-
-            // UserEntity 생성 및 데이터 설정
             UserEntity userEntity = UserEntity.builder()
-                    .username(username)
+                    .username(userDto.getUsername())
                     .password(encodedPassword)
-                    .email(email)  // 필요하면 추가
-                    .name(name)
+                    .email(userDto.getEmail())
+                    .name(userDto.getName())
                     .build();
 
             validationService.checkValid(userEntity);
