@@ -1,16 +1,20 @@
 package com.example.musicdiary.presentation.controller;
 
+import com.example.musicdiary.common.ReviewDto;
 import com.example.musicdiary.presentation.dto.request.CreateReviewRequestDto;
 import com.example.musicdiary.presentation.dto.request.SetReviewLikeRequestDto;
+import com.example.musicdiary.presentation.dto.response.ReviewResponseDto;
 import com.example.musicdiary.service.LikedReviewService;
 import com.example.musicdiary.service.ReviewService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -18,11 +22,13 @@ import java.time.LocalDate;
 public class ReviewController {
     private final ReviewService reviewService;
     private final LikedReviewService likedReviewService;
+    private final ModelMapper modelMapper;
 
     @PostMapping("/create")
     public ResponseEntity<?> createReview(@RequestBody CreateReviewRequestDto createReviewRequestDto) {
         try {
-            reviewService.createReview2(createReviewRequestDto);
+            ReviewDto createReviewDto = modelMapper.map(createReviewRequestDto, ReviewDto.class);
+            reviewService.createReview2(createReviewDto);
             return ResponseEntity.status(HttpStatus.CREATED).body("reviewEntity created");
         }
         catch (Exception e) {
@@ -32,7 +38,9 @@ public class ReviewController {
     @GetMapping("/{date}")
     public ResponseEntity<?> getReviewDate(@RequestHeader("username") String username, @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
         try {
-            return ResponseEntity.ok(reviewService.getReviewDate(username,date));
+            ReviewDto reviewDto = reviewService.getReviewDate(username,date);
+            ReviewResponseDto reviewResponseDto = modelMapper.map(reviewDto, ReviewResponseDto.class);
+            return ResponseEntity.ok(reviewResponseDto);
         }
         catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -42,7 +50,10 @@ public class ReviewController {
     @GetMapping("/all")
     public ResponseEntity<?> getAllReview(@RequestHeader("username") String username) {
         try {
-            return ResponseEntity.ok(reviewService.getAllReview(username));
+            List<ReviewDto> reviewDtoList = reviewService.getAllReview(username);
+            List<ReviewResponseDto> reviewResponseDtoList =
+                    reviewDtoList.stream().map(reviewDto -> modelMapper.map(reviewDto,ReviewResponseDto.class)).toList();
+            return ResponseEntity.ok(reviewResponseDtoList);
         }
         catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -52,7 +63,10 @@ public class ReviewController {
     @GetMapping("/public")
     public ResponseEntity<?> getPublicReview() {
         try {
-            return ResponseEntity.ok(reviewService.getPublicReview());
+            List<ReviewDto> reviewDtoList = reviewService.getPublicReview();
+            List<ReviewResponseDto> reviewResponseDtoList =
+                    reviewDtoList.stream().map(reviewDto -> modelMapper.map(reviewDto,ReviewResponseDto.class)).toList();
+            return ResponseEntity.ok(reviewResponseDtoList);
         }
         catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -62,7 +76,8 @@ public class ReviewController {
     @PostMapping("/like")
     public ResponseEntity<?> setReviewLike(@RequestHeader("username") String username, @RequestBody SetReviewLikeRequestDto setReviewLikeRequestDto) {
         try {
-            likedReviewService.setReviewLike(username,setReviewLikeRequestDto);
+            ReviewDto reviewLikeDto = modelMapper.map(setReviewLikeRequestDto, ReviewDto.class);
+            likedReviewService.setReviewLike(username, reviewLikeDto);
             return ResponseEntity.ok().build();
         }
         catch (Exception e) {
@@ -72,7 +87,8 @@ public class ReviewController {
     @PostMapping("/unlike")
     public ResponseEntity<?> setReviewUnLike(@RequestHeader("username") String username, @RequestBody SetReviewLikeRequestDto setReviewLikeRequestDto) {
         try {
-            likedReviewService.setReviewUnlike(username,setReviewLikeRequestDto);
+            ReviewDto reviewUnlikeDto = modelMapper.map(setReviewLikeRequestDto, ReviewDto.class);
+            likedReviewService.setReviewUnlike(username, reviewUnlikeDto);
             return ResponseEntity.ok().build();
         }
         catch (Exception e) {

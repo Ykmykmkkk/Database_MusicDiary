@@ -1,8 +1,7 @@
 package com.example.musicdiary.service;
 
+import com.example.musicdiary.common.SongDto;
 import com.example.musicdiary.domain.SongEntity;
-import com.example.musicdiary.presentation.dto.request.CreateSongRequestDto;
-import com.example.musicdiary.presentation.dto.response.SongResponseDto;
 import com.example.musicdiary.repository.SongRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,22 +13,28 @@ import org.springframework.transaction.annotation.Transactional;
 public class SongService {
     private final SongRepository songRepository;
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public void createSong(CreateSongRequestDto createSongRequestDto) {
+    public void createSong(SongDto createSongDto) {
         boolean isExists = songRepository.existsByTitleAndArtist(
-                createSongRequestDto.getTitle()
-                ,createSongRequestDto.getArtist());
+                createSongDto.getTitle()
+                ,createSongDto.getArtist());
         if(isExists){
             throw new IllegalArgumentException("이미 존재하는 노래입니다");
         }
         else{
-            songRepository.save(createSongRequestDto.toEntity());
+            SongEntity songEntity = SongEntity.builder()
+                    .artist(createSongDto.getArtist())
+                    .album(createSongDto.getAlbum())
+                    .title(createSongDto.getTitle())
+                    .releaseDate(createSongDto.getReleaseDate())
+                    .durationTime(createSongDto.getDurationTime()).build();
+            songRepository.save(songEntity);
         }
     }
     @Transactional(readOnly = true)
-    public SongResponseDto getSongByTitleAndArtist(String title, String artist) {
+    public SongDto getSongByTitleAndArtist(String title, String artist) {
         SongEntity songEntity = songRepository.findByTitleAndArtist(title, artist)
                 .orElseThrow(() -> new IllegalArgumentException("노래가 존재하지 않습니다"));
-        return SongResponseDto.builder()
+        return SongDto.builder()
                .title(songEntity.getTitle())
                .artist(songEntity.getArtist())
                .album(songEntity.getAlbum())

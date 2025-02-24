@@ -18,7 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
-public class WebSecurity{
+public class WebSecurity {
 
     private final UserService userService;
     private final Environment env; // 토큰 유효 시간 같은 정보들을 가져올 때
@@ -33,12 +33,13 @@ public class WebSecurity{
         // AuthenticationManager 생성
         AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
 
-        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManager, userService,env);
+        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManager, userService, env);
 
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/user/login", "/user/register", "/user/duplicate", "/css/**", "/js/**").permitAll() // 인증 없이 접근 가능
-                        .anyRequest().authenticated() // 그 외 요청은 인증 필요
+                                .requestMatchers("/user/login", "/user/register", "/user/duplicate", "/css/**", "/js/**").permitAll() // 인증 없이 접근 가능
+                                .anyRequest().permitAll()
+                        //.anyRequest().authenticated() // 그 외 요청은 인증 필요
                 )
                 .authenticationManager(authenticationManager)
                 .addFilterAt(customAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
