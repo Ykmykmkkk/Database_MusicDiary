@@ -1,6 +1,5 @@
 package com.example.musicdiary.presentation.dto.request;
 
-import com.example.musicdiary.common.UserDto;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -15,13 +14,4 @@ public class RegisterUserRequestDto {
     private String name;
 
     private String email;
-    public UserDto toServiceDto(String encodedPassword) {
-        return UserDto.builder()
-                .username(username)
-                .name(name)
-                .email(email)
-                .password(encodedPassword)
-                .build();
-    }
-
 }
