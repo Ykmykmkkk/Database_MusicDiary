@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Data
 @Builder
@@ -16,6 +17,15 @@ import java.time.LocalDate;
 public class ReviewDto {
     private Long id;              // 리뷰 ID
     private LocalDate reviewDate; // 리뷰 작성 날짜
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ReviewDto reviewDto)) return false;
+        return Objects.equals(getId(), reviewDto.getId()) && Objects.equals(getUsername(), reviewDto.getUsername());
+    }
+
+
 
     // UserEntity 대신 필요한 필드만
     private Long userId;          // 사용자 ID
@@ -28,4 +38,6 @@ public class ReviewDto {
 
     private String reviewContent; // 리뷰 내용
     private Boolean isPublic;     // 공개 여부
+
+    private Boolean isLike; // 좋아요를 눌렀는지
 }
