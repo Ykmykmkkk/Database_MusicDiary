@@ -2,7 +2,7 @@ server:
   port: 8080
 spring:
   application:
-    name: backend
+    name: main-service
   datasource:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
@@ -20,6 +20,5 @@ eureka:
   client:
     register-with-eureka: true
     fetch-registry: true
-    enabled: true
     service-url:
       defaultZone: http://localhost:8761/eureka/

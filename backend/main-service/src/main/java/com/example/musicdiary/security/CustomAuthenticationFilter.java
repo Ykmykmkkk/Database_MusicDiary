@@ -85,7 +85,5 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
                 .compact(); // compact를 통해 Jwt 토큰을 생성
 
         response.addHeader("token", token);
-        response.addHeader("userId", String.valueOf(customUserDetails.getId()));
-
     }
 }
