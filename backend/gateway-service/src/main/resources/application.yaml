@@ -27,7 +27,17 @@ spring:
           filters:
               - RemoveRequestHeader=Cookie
               - RewritePath=/main-service/(?<segment>.*), /$\{segment}
-
+        - id: main-service
+          uri: lb://MAIN-SERVICE/
+          predicates:
+            - Path=/main-service/review/all
+            - Method=GET
+          filters:
+            - JwtFilter
+            - RewritePath=/main-service/(?<segment>.*), /$\{segment}
+token:
+  secret: mynameiskyeongminyeomcascascasavasvasvsvascascasajsnvnvsjkvnqvnqwiovnsaovknvakssa
+  issuer: user-service
 
               #        - id: user-service
 #          uri: lb://USER-SERVICE/
