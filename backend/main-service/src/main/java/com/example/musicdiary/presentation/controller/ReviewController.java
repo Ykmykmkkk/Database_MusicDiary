@@ -49,7 +49,7 @@ public class ReviewController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAllReview(@RequestHeader("username") String username) {
+    public ResponseEntity<?> getAllReview(@RequestHeader("X-User-Id") String username) {
         try {
             List<ReviewDto> reviewDtoList = reviewService.getAllReview(username);
             List<ReviewResponseDto> reviewResponseDtoList =
