@@ -2,9 +2,7 @@ package com.example.musicdiary.presentation.controller;
 
 import com.example.musicdiary.common.ReviewDto;
 import com.example.musicdiary.presentation.dto.request.CreateReviewRequestDto;
-import com.example.musicdiary.presentation.dto.request.SetReviewLikeRequestDto;
 import com.example.musicdiary.presentation.dto.response.ReviewResponseDto;
-import com.example.musicdiary.service.LikedReviewService;
 import com.example.musicdiary.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -24,10 +22,10 @@ public class ReviewController {
     private final ModelMapper modelMapper;
 
     @PostMapping("/create")
-    public ResponseEntity<?> createReview(@RequestBody CreateReviewRequestDto createReviewRequestDto) {
+    public ResponseEntity<?> createReview(@RequestHeader("X-User-Id") Long userId, @RequestBody CreateReviewRequestDto createReviewRequestDto) {
         try {
             ReviewDto createReviewDto = modelMapper.map(createReviewRequestDto, ReviewDto.class);
-            reviewService.createReview(createReviewDto);
+            reviewService.createReview(userId, createReviewDto);
             return ResponseEntity.status(HttpStatus.CREATED).body("reviewEntity created");
         }
         catch (Exception e) {
@@ -36,9 +34,9 @@ public class ReviewController {
     }
 
     @GetMapping("/{date}")
-    public ResponseEntity<?> getReviewDate(@RequestHeader("username") String username, @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+    public ResponseEntity<?> getReviewDate(@RequestHeader("X-User-Id") Long userId, @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
         try {
-            ReviewDto reviewDto = reviewService.getReviewDate(username,date);
+            ReviewDto reviewDto = reviewService.getReviewDate(userId, date);
             ReviewResponseDto reviewResponseDto = modelMapper.map(reviewDto, ReviewResponseDto.class);
             return ResponseEntity.ok(reviewResponseDto);
         }
@@ -48,9 +46,9 @@ public class ReviewController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAllReview(@RequestHeader("X-User-Id") String username) {
+    public ResponseEntity<?> getAllReview(@RequestHeader("X-User-Id") Long userId) {
         try {
-            List<ReviewDto> reviewDtoList = reviewService.getAllReview(username);
+            List<ReviewDto> reviewDtoList = reviewService.getAllReview(userId);
             List<ReviewResponseDto> reviewResponseDtoList =
                     reviewDtoList.stream().map(reviewDto -> modelMapper.map(reviewDto,ReviewResponseDto.class)).toList();
             return ResponseEntity.ok(reviewResponseDtoList);
@@ -60,8 +58,8 @@ public class ReviewController {
         }
     }
 
-    @GetMapping("/public")
-    public ResponseEntity<?> getPublicReview() {
+    @GetMapping("/public") //
+    public ResponseEntity<?> getPublicReview(@RequestHeader("X-User-Id") Long userId) {
         try {
             List<ReviewDto> reviewDtoList = reviewService.getPublicReview();
             List<ReviewResponseDto> reviewResponseDtoList =
@@ -72,6 +70,4 @@ public class ReviewController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
-
 }

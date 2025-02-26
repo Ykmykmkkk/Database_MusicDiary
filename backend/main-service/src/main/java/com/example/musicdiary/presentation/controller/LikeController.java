@@ -16,14 +16,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RequiredArgsConstructor
-@RestController("/like")
+@RestController
+@RequestMapping("/like")
 public class LikeController {
     private final ModelMapper modelMapper;
-    private final LikedSongService likedSongService;
     private final LikedReviewService likedReviewService;
+    private final LikedSongService likedSongService;
 
     @PostMapping("/song")
-    public ResponseEntity<?> setSongLike(@RequestHeader("X-User-Id") String userId, @RequestBody SetSongLikeRequestDto setSongLikeRequestDto) {
+    public ResponseEntity<?> setSongLike(@RequestHeader("X-User-Id") Long userId, @RequestBody SetSongLikeRequestDto setSongLikeRequestDto) {
         try {
             SongDto songDto = modelMapper.map(setSongLikeRequestDto,SongDto.class);
             likedSongService.setSongLike(userId,songDto);
@@ -35,7 +36,7 @@ public class LikeController {
     }
 
     @PostMapping("/song/cancel")
-    public ResponseEntity<?> setSongUnlike(@RequestHeader("X-User-Id") String userId, @RequestBody SetSongLikeRequestDto setSongLikeRequestDto) {
+    public ResponseEntity<?> setSongUnlike(@RequestHeader("X-User-Id") Long userId, @RequestBody SetSongLikeRequestDto setSongLikeRequestDto) {
         try {
             SongDto songDto = modelMapper.map(setSongLikeRequestDto,SongDto.class);
             likedSongService.setSongUnlike(userId,songDto);
@@ -48,9 +49,9 @@ public class LikeController {
 
 
     @GetMapping("/song")
-    public ResponseEntity<?> getSongLike(@RequestHeader("X-User-Id") String userId) {
+    public ResponseEntity<?> getSongLike(@RequestHeader("X-User-Id") Long userId) {
         try {
-            List<SongDto> likedSongList = likedSongService.getLikedSongListByUsername(userId);
+            List<SongDto> likedSongList = likedSongService.getLikedSongListByUserId(userId);
             List<SongResponseDto> responseDtoList = likedSongList.stream().map(songDto -> modelMapper.map(songDto,SongResponseDto.class)).toList();
             return ResponseEntity.ok(responseDtoList);
         }
@@ -60,7 +61,7 @@ public class LikeController {
     }
 
     @PostMapping("/review")
-    public ResponseEntity<?> setReviewLike(@RequestHeader("X-User-Id") String userId, @RequestBody SetReviewLikeRequestDto setReviewLikeRequestDto) {
+    public ResponseEntity<?> setReviewLike(@RequestHeader("X-User-Id") Long userId, @RequestBody SetReviewLikeRequestDto setReviewLikeRequestDto) {
         try {
             ReviewDto reviewLikeDto = modelMapper.map(setReviewLikeRequestDto, ReviewDto.class);
             likedReviewService.setReviewLike(userId, reviewLikeDto);
@@ -72,7 +73,8 @@ public class LikeController {
     }
 
     @PostMapping("/review/cancel")
-    public ResponseEntity<?> setReviewUnLike(@RequestHeader("X-User-Id") String userId, @RequestBody SetReviewLikeRequestDto setReviewLikeRequestDto) {
+    public ResponseEntity<?> setReviewUnLike(@RequestHeader("X-User-Id") Long userId, @RequestBody SetReviewLikeRequestDto setReviewLikeRequestDto) {
+
         try {
             ReviewDto reviewUnlikeDto = modelMapper.map(setReviewLikeRequestDto, ReviewDto.class);
             likedReviewService.setReviewUnlike(userId, reviewUnlikeDto);
@@ -85,9 +87,9 @@ public class LikeController {
 
 
     @GetMapping("/review")
-    public ResponseEntity<?> getReviewLike(@RequestHeader("X-User-Id") String userId) {
+    public ResponseEntity<?> getReviewLike(@RequestHeader("X-User-Id") Long userId) {
         try {
-            List<ReviewDto> likedReviewDtoList = likedReviewService.getLikedReviewListByUsername(userId);
+            List<ReviewDto> likedReviewDtoList = likedReviewService.getLikedReviewListByUserId(userId);
             List<ReviewResponseDto> reviewResponseDtoList = likedReviewDtoList.stream()
                     .map(reviewDto -> modelMapper.map(reviewDto, ReviewResponseDto.class)).toList();
 
@@ -97,6 +99,5 @@ public class LikeController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
 
 }

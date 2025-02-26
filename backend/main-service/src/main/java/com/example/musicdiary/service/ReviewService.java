@@ -1,7 +1,6 @@
 package com.example.musicdiary.service;
 
 import com.example.musicdiary.common.ReviewDto;
-import com.example.musicdiary.domain.LikedReviewEntity;
 import com.example.musicdiary.domain.ReviewEntity;
 import com.example.musicdiary.domain.SongEntity;
 import com.example.musicdiary.domain.UserEntity;
@@ -21,8 +20,8 @@ public class ReviewService {
     private final UserService userService;
     private final SongService songService;
     @Transactional(readOnly = true)
-    public List<ReviewDto> getAllReview(String username) {
-        List<ReviewEntity> reviewEntities = reviewRepository.findAllByUserEntity_username(username);
+    public List<ReviewDto> getAllReview(Long userId) {
+        List<ReviewEntity> reviewEntities = reviewRepository.findAllByUserEntityId(userId);
         if(reviewEntities.isEmpty()){
             throw new RuntimeException("No reviewEntity found");
         }
@@ -31,14 +30,13 @@ public class ReviewService {
 
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public void createReview(ReviewDto createReviewDto) {
+    public void createReview(Long userId, ReviewDto createReviewDto) {
         boolean isExists = reviewRepository.existsByUserEntity_usernameAndReviewDate(
                 createReviewDto.getUsername(),createReviewDto.getReviewDate());
         if (isExists) {
            throw new IllegalArgumentException("Already reviewed");
         }
-        String username = createReviewDto.getUsername();
-        UserEntity userEntity = userService.getUserEntityByUsername(username);
+        UserEntity userEntity = userService.getUserEntityByUserId(userId);
         String songTitle = createReviewDto.getSongTitle();
         String songArtist = createReviewDto.getSongArtist();
         SongEntity songEntity = songService.getSongEntityByTitleAndArtist(songTitle, songArtist);
@@ -74,8 +72,8 @@ public class ReviewService {
         return toReviewDtoList(reviewEntities);
     }
     @Transactional(readOnly = true) // 사용자가 캘린더를 통해 해당 날짜에 자신이 작성한 리뷰를 받는 메소드
-    public ReviewDto getReviewDate(String username, LocalDate date) {
-        ReviewEntity reviewEntity = reviewRepository.findByUserEntity_usernameAndReviewDate(username, date).
+    public ReviewDto getReviewDate(Long userId, LocalDate date) {
+        ReviewEntity reviewEntity = reviewRepository.findByUserEntityIdAndReviewDate(userId, date).
                 orElseThrow(() -> new IllegalArgumentException("리뷰가 존재하지 않습니다"));
 
         return  ReviewDto.builder()
@@ -105,8 +103,8 @@ public class ReviewService {
     }
 
 
-    public ReviewEntity getReviewEntityByUsernameAndReviewDate(String username, LocalDate date) {
-        return reviewRepository.findByUserEntity_usernameAndReviewDate(username, date).orElseThrow(() -> new IllegalArgumentException("리뷰가 존재하지 않습니다"));
+    public ReviewEntity getReviewEntityByWriterNameAndReviewDate(String writerName, LocalDate date) {
+        return reviewRepository.findByUserEntity_UsernameAndReviewDate(writerName, date).orElseThrow(() -> new IllegalArgumentException("리뷰가 존재하지 않습니다"));
     }
 
 }

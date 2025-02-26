@@ -15,9 +15,9 @@ import java.util.Optional;
 public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
     @Query("SELECT r FROM ReviewEntity r JOIN FETCH r.userEntity JOIN FETCH r.songEntity WHERE r.isPublic = true")
     List<ReviewEntity> findAllByIsPublicTrue();
-    List<ReviewEntity> findAllByUserEntity_username(String username);
+    List<ReviewEntity> findAllByUserEntityId(Long userId);
 
-    Optional<ReviewEntity> findByUserEntity_usernameAndReviewDate(String username, LocalDate date);
+    Optional<ReviewEntity> findByUserEntityIdAndReviewDate(Long userId, LocalDate date);
 
     boolean existsByUserEntity_usernameAndReviewDate(String username, LocalDate reviewDate);
 
@@ -46,4 +46,5 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
     );
 
 
+    Optional<ReviewEntity> findByUserEntity_UsernameAndReviewDate(String username, LocalDate date);
 }
