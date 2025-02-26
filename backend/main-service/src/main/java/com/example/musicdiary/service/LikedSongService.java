@@ -21,13 +21,13 @@ public class LikedSongService {
     private final SongService songService;
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public void setSongLike(String username, SongDto setSongLikeDto) {
+    public void setSongLike(String userId, String songId) {
 
-        boolean isExist = likedSongRepository.existsByUserEntity_UsernameAndSongEntity_TitleAndSongEntity_Artist(username, setSongLikeDto.getTitle(), setSongLikeDto.getArtist());
+        boolean isExist = likedSongRepository.existsByUserEntity_IdAndSongEntity_Id(userId, songId);
         if(isExist){
             throw new IllegalArgumentException("Already liked this song");
         }
-        UserEntity userEntity = userService.getUserEntityByUsername(username);
+        UserEntity userEntity = userService.getUserEntityByUsername(userId);
         String title = setSongLikeDto.getTitle();
         String artist = setSongLikeDto.getArtist();
         SongEntity songEntity = songService.getSongEntityByTitleAndArtist(title, artist);
@@ -38,8 +38,8 @@ public class LikedSongService {
         likedSongRepository.save(likedSongEntity);
     }
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public void setSongUnlike(String username, SongDto setSongLikeDto) {
-        UserEntity userEntity = userService.getUserEntityByUsername(username);
+    public void setSongUnlike(String userId, SongDto setSongLikeDto) {
+        UserEntity userEntity = userService.getUserEntityByUsername(userId);
         String title = setSongLikeDto.getTitle();
         String artist = setSongLikeDto.getArtist();
         SongEntity song = songService.getSongEntityByTitleAndArtist(title, artist);
@@ -48,9 +48,9 @@ public class LikedSongService {
         likedSongRepository.delete(likedSongEntity);
     }
     @Transactional(readOnly = true)
-    public List<SongDto> getLikedSongListByUsername(String username) {
+    public List<SongDto> getLikedSongListByUsername(String userId) {
         return toSongDtoList(
-                likedSongRepository.findAllByUser_Username(username).stream()
+                likedSongRepository.findAllByUser_Username(userId).stream()
                 .map(LikedSongEntity::getSongEntity)
                 .toList()
         );

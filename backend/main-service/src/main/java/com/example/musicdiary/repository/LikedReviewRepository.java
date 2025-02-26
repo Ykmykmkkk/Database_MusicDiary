@@ -16,7 +16,7 @@ public interface LikedReviewRepository extends JpaRepository<LikedReviewEntity, 
     @Query("SELECT lr FROM LikedReviewEntity lr WHERE lr.userEntity.username = :username")
     List<LikedReviewEntity> findAllByUser_Username(String username);
 
-    boolean existsByUserEntity_UsernameAndReviewEntity_ReviewDate(String reviewWriter, LocalDate reviewDate);
+    boolean existsByUserIdAndReviewEntity_ReviewDate(String reviewWriter, LocalDate reviewDate);
 
     Optional<LikedReviewEntity> findByUserEntityAndReviewEntity(UserEntity userEntity, ReviewEntity reviewEntity);
 }

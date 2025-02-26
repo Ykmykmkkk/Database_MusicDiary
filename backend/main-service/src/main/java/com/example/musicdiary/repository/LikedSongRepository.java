@@ -13,6 +13,6 @@ public interface LikedSongRepository extends JpaRepository<LikedSongEntity, Long
     @Query("SELECT sg FROM LikedSongEntity sg WHERE sg.userEntity.username = :username")
     List<LikedSongEntity> findAllByUser_Username(String username);
 
-    boolean existsByUserEntity_UsernameAndSongEntity_TitleAndSongEntity_Artist(String username, String title, String artist);
+    boolean existsByUserEntity_IdAndSongEntity_Id(String userId, String songId);
     Optional<LikedSongEntity> findByUserEntityAndSongEntity(UserEntity userEntity, SongEntity song);
 }
