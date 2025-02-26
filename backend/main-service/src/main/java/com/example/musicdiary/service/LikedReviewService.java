@@ -22,7 +22,7 @@ public class LikedReviewService {
     private final ReviewService reviewService;
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void setReviewLike(String username, ReviewDto setReviewLikeDto) {
-        boolean isExist = likedReviewRepository.existsByUserEntity_UsernameAndReviewEntity_ReviewDate(
+        boolean isExist = likedReviewRepository.existsByUserIdAndReviewEntity_ReviewDate(
                 setReviewLikeDto.getUsername(),setReviewLikeDto.getReviewDate());
         if(isExist){
             throw new IllegalArgumentException("Already liked this reviewEntity");
