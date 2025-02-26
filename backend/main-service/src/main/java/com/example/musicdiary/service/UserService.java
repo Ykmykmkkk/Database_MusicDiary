@@ -69,12 +69,6 @@ public class UserService implements UserDetailsService {
         }
     }
     @Transactional(readOnly = true)
-    public UserEntity getUserEntityByUsername(String username) {
-        return userRepository.findByUsernameAndDeleted(username, false)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
-    }
-
-    @Transactional(readOnly = true)
     public UserDto getUserDtoByUsername(String username) {
         UserEntity userEntity = userRepository.findByUsernameAndDeleted(username, false)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
@@ -89,6 +83,13 @@ public class UserService implements UserDetailsService {
         userEntity.delete();
         userRepository.save(userEntity);
     }
+
+    @Transactional(readOnly = true)
+    public UserEntity getUserEntityByUserId(Long userId) {
+        return userRepository.findByIdAndDeleted(userId, false)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+    }
+
 
 
 }

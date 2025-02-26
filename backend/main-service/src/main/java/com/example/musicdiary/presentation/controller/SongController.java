@@ -20,7 +20,6 @@ import java.util.List;
 @RequestMapping("/song")
 public class SongController {
     private final SongService songService;
-    private final LikedSongService likedSongService;
     private final ModelMapper modelMapper;
 
     @PostMapping("/create")
@@ -42,43 +41,6 @@ public class SongController {
             SongResponseDto songResponseDto = modelMapper.map(song, SongResponseDto.class);
             return ResponseEntity.ok(songResponseDto);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-    @PostMapping("/like")
-    public ResponseEntity<?> setSongLike(@RequestHeader("username") String username, @RequestBody SetSongLikeRequestDto setSongLikeRequestDto) {
-        try {
-            SongDto songDto = modelMapper.map(setSongLikeRequestDto,SongDto.class);
-            likedSongService.setSongLike(username,songDto);
-            return ResponseEntity.ok().build();
-        }
-        catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-    @PostMapping("/unlike")
-    public ResponseEntity<?> setSongUnlike(@RequestHeader("username") String username, @RequestBody SetSongLikeRequestDto setSongLikeRequestDto) {
-        try {
-            SongDto songDto = modelMapper.map(setSongLikeRequestDto,SongDto.class);
-            likedSongService.setSongUnlike(username,songDto);
-            return ResponseEntity.ok().build();
-        }
-        catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-
-    @GetMapping("/like")
-    public ResponseEntity<?> getSongLike(@RequestHeader("username") String username) {
-        try {
-            List<SongDto> likedSongList = likedSongService.getLikedSongListByUsername(username);
-            List<SongResponseDto> responseDtoList = likedSongList.stream().map(songDto -> modelMapper.map(songDto,SongResponseDto.class)).toList();
-            return ResponseEntity.ok(responseDtoList);
-        }
-        catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
