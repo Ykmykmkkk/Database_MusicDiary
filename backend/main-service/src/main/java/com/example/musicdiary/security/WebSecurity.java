@@ -2,6 +2,7 @@ package com.example.musicdiary.security;
 
 import com.example.musicdiary.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Interceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -14,11 +15,13 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
-public class WebSecurity {
+public class WebSecurity implements WebMvcConfigurer{
 
     private final UserService userService;
     private final Environment env; // 토큰 유효 시간 같은 정보들을 가져올 때

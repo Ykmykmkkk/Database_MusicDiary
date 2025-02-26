@@ -60,7 +60,6 @@ public class LikeController {
         }
     }
 
-
     @PostMapping("/review")
     public ResponseEntity<?> setReviewLike(@RequestHeader("X-User-Id") Long userId, @RequestBody SetReviewLikeRequestDto setReviewLikeRequestDto) {
         try {
@@ -75,6 +74,7 @@ public class LikeController {
 
     @PostMapping("/review/cancel")
     public ResponseEntity<?> setReviewUnLike(@RequestHeader("X-User-Id") Long userId, @RequestBody SetReviewLikeRequestDto setReviewLikeRequestDto) {
+
         try {
             ReviewDto reviewUnlikeDto = modelMapper.map(setReviewLikeRequestDto, ReviewDto.class);
             likedReviewService.setReviewUnlike(userId, reviewUnlikeDto);

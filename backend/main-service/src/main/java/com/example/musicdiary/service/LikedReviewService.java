@@ -26,6 +26,7 @@ public class LikedReviewService {
         boolean isExist = likedReviewRepository.existsByUserEntityUsernameAndReviewEntityReviewDate(
                 setReviewLikeDto.getUsername(), setReviewLikeDto.getReviewDate());
         if (isExist) {
+
             throw new IllegalArgumentException("Already liked this reviewEntity");
         }
         UserEntity userEntity = userService.getUserEntityByUserId(userId);

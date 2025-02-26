@@ -21,6 +21,7 @@ public class LikedSongService {
     private final SongService songService;
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
+
     public void setSongLike(Long userId, SongDto setSongLikeDto) {
 
         boolean isExist = likedSongRepository.existsByUserEntityIdAndSongEntityTitleAndSongEntityArtist(userId, setSongLikeDto.getTitle(), setSongLikeDto.getArtist());
@@ -28,6 +29,7 @@ public class LikedSongService {
             throw new IllegalArgumentException("Already liked this song");
         }
         UserEntity userEntity = userService.getUserEntityByUserId(userId);
+
         String title = setSongLikeDto.getTitle();
         String artist = setSongLikeDto.getArtist();
         SongEntity songEntity = songService.getSongEntityByTitleAndArtist(title, artist);
@@ -38,8 +40,10 @@ public class LikedSongService {
         likedSongRepository.save(likedSongEntity);
     }
     @Transactional(isolation = Isolation.SERIALIZABLE)
+
     public void setSongUnlike(Long userId, SongDto setSongLikeDto) {
         UserEntity userEntity = userService.getUserEntityByUserId(userId);
+
         String title = setSongLikeDto.getTitle();
         String artist = setSongLikeDto.getArtist();
         SongEntity song = songService.getSongEntityByTitleAndArtist(title, artist);
@@ -48,11 +52,13 @@ public class LikedSongService {
         likedSongRepository.delete(likedSongEntity);
     }
     @Transactional(readOnly = true)
+
     public List<SongDto> getLikedSongListByUserId(Long userId) {
         return toSongDtoList(
                 likedSongRepository.findAllByUserEntityId(userId).stream()
                         .map(LikedSongEntity::getSongEntity)
                         .toList()
+
         );
     }
 

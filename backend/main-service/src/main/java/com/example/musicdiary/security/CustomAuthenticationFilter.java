@@ -1,7 +1,6 @@
 package com.example.musicdiary.security;
 
-import com.example.musicdiary.common.UserDto;
-import com.example.musicdiary.common.UserDto;
+
 import com.example.musicdiary.presentation.dto.request.LoginRequestDto;
 import com.example.musicdiary.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,8 +16,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -37,16 +36,20 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     @Override // UsenamePasswordAuthenticationFilter가 가장 먼저 실행 하는 메소드. 인증 과정 실행
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
-        try{
+        try {
             LoginRequestDto loginRequestDto =
                     new ObjectMapper().readValue(request.getInputStream(), LoginRequestDto.class);
             return getAuthenticationManager().authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequestDto.getUsername(),
                             loginRequestDto.getPassword(), new ArrayList<>())
             );
-        }
-        catch (IOException e) {
-            throw  new RuntimeException(e);
+        } catch (IOException e) {
+            try {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST,"Invalid request body");
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            return null; // 해당 인증 검증 로직이 끝났다
         }
     }
 
@@ -72,6 +75,12 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
             throw new IllegalStateException("Principal must be an instance of CustomUserDetails");
         }
 
+        generateToken(response, customUserDetails.getId());
+
+        chain.doFilter(request,response); // 후속 처리 진행
+    }
+
+    protected void generateToken(HttpServletResponse response, Long userId) {
         byte[] keyBytes = env.getProperty("token.secret").getBytes();
         if (keyBytes.length < 64) {
             throw new IllegalArgumentException("Secret key must be at least 512 bits (64 bytes) for HS512");
@@ -79,9 +88,10 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         var key = Keys.hmacShaKeyFor(keyBytes);
 
         String token = Jwts.builder()
-                .setSubject(String.valueOf(customUserDetails.getId()))
+                .setSubject(String.valueOf(userId))
                 .setExpiration(new Date(System.currentTimeMillis() + Long.parseLong(env.getProperty("token.expiration_time"))))
                 .signWith(key, SignatureAlgorithm.HS512)
+                .setIssuer("user-service")
                 .compact(); // compact를 통해 Jwt 토큰을 생성
 
         response.addHeader("token", token);
