@@ -25,8 +25,6 @@ public class ReviewDto {
         return Objects.equals(getId(), reviewDto.getId()) && Objects.equals(getUsername(), reviewDto.getUsername());
     }
 
-
-
     // UserEntity 대신 필요한 필드만
     private Long userId;          // 사용자 ID
     private String username;      // 사용자 이름
