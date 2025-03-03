@@ -1,12 +1,10 @@
-package com.example.musicdiary.security;
+package com.example.userservice.security;
 
-
-import com.example.musicdiary.presentation.dto.request.LoginRequestDto;
-import com.example.musicdiary.application.UserService;
+import com.example.userservice.presentation.dto.requestDto.LoginRequestDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,24 +19,24 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.UUID;
 
-public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-
+public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     Environment env;
-    UserService userService;
 
-    public CustomAuthenticationFilter(AuthenticationManager authenticationManager, UserService userService, Environment env) {
-        super.setAuthenticationManager(authenticationManager);
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, Environment env) {
+        super(authenticationManager);
         this.env = env;
-        this.userService = userService;
     }
 
-    @Override // UsenamePasswordAuthenticationFilter가 가장 먼저 실행 하는 메소드. 인증 과정 실행
+    @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
         try {
             LoginRequestDto loginRequestDto =
                     new ObjectMapper().readValue(request.getInputStream(), LoginRequestDto.class);
+            // jackson의 objectMapper를 이용해 LoginRequestDto 가져오기
+
             return getAuthenticationManager().authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequestDto.getUsername(),
                             loginRequestDto.getPassword(), new ArrayList<>())
@@ -52,9 +50,9 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
             return null; // 해당 인증 검증 로직이 끝났다
         }
     }
-
     @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
+                                              AuthenticationException failed) throws IOException, ServletException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
@@ -66,11 +64,9 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         response.getWriter().write(errorMessage);
     }
 
-    @Override // 인증 성공인 경우 username을 가져와 그것을 기반으로 jwt Token을 생성할 것이다
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
-                                            FilterChain chain, Authentication authResult)
-            throws IOException, ServletException {
-
+    @Override
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
+                                            Authentication authResult) throws IOException, ServletException {
         if (!(authResult.getPrincipal() instanceof CustomUserDetails customUserDetails)) {
             throw new IllegalStateException("Principal must be an instance of CustomUserDetails");
         }
@@ -79,9 +75,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
         chain.doFilter(request,response); // 후속 처리 진행
     }
-
-    protected void generateToken(HttpServletResponse response, Long userId) {
-        byte[] keyBytes = env.getProperty("token.secret").getBytes();
+    protected void generateToken(HttpServletResponse response, UUID userId) throws IOException {
+        byte[] keyBytes = env.getProperty("TOKEN_SECRET").getBytes();
         if (keyBytes.length < 64) {
             throw new IllegalArgumentException("Secret key must be at least 512 bits (64 bytes) for HS512");
         }
@@ -89,11 +84,14 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
         String token = Jwts.builder()
                 .setSubject(String.valueOf(userId))
-                .setExpiration(new Date(System.currentTimeMillis() + Long.parseLong(env.getProperty("token.expiration_time"))))
+                .setExpiration(new Date(System.currentTimeMillis()
+                        + Long.parseLong(env.getProperty("TOKEN_EXPRIATION_TIME"))))
                 .signWith(key, SignatureAlgorithm.HS512)
-                .setIssuer("user-service")
+                .setIssuer(env.getProperty("TOKEN_ISSUER"))
                 .compact(); // compact를 통해 Jwt 토큰을 생성
 
-        response.addHeader("token", token);
+        response.addHeader("Authorization", "Bearer " + token);
+        response.setContentType("application/json");
+        response.getWriter().write("{\"token\": \"" + token + "\"}");
     }
 }

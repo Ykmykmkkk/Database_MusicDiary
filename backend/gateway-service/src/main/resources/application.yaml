@@ -21,14 +21,30 @@ spring:
             preLogger: True
             postLogger: True
       routes:
-        - id: main-service
-          uri: lb://MAIN-SERVICE/
+        - id: user-service
+          uri: lb://USER-SERVICE/
           predicates:
-            - Path=/main-service/login
+            - Path=/user/login
             - Method=POST
           filters:
               - RemoveRequestHeader=Cookie
-              - RewritePath=/main-service/(?<segment>.*), /$\{segment}
+              - RewritePath=/user/(?<segment>.*), /$\{segment}
+        - id: user-service
+          uri: lb://USER-SERVICE/
+          predicates:
+            - Path=/user/duplicate
+            - Method=POST
+          filters:
+             - RemoveRequestHeader=Cookie
+             - RewritePath=/user/(?<segment>.*), /$\{segment}
+        - id: user-service
+          uri: lb://USER-SERVICE/
+          predicates:
+            - Path=/user/register
+            - Method=POST
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user/(?<segment>.*), /$\{segment}
         - id: main-service
           uri: lb://MAIN-SERVICE/
           predicates:
@@ -37,9 +53,7 @@ spring:
           filters:
             - JwtFilter
             - RewritePath=/main-service/(?<segment>.*), /$\{segment}
-token:
-  secret: mynameiskyeongminyeomcascascasavasvasvsvascascasajsnvnvsjkvnqvnqwiovnsaovknvakssa
-  issuer: user-service
+
 
               #        - id: user-service
 #          uri: lb://USER-SERVICE/

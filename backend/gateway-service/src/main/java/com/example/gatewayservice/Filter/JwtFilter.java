@@ -74,8 +74,8 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
     //userId 추출 및 토큰 검증 로직
     private String extractUserId(String jwt) {
         try {
-            byte[] base64Key = env.getProperty("token.secret").getBytes();
-            String expectedIssuer = env.getProperty("token.issuer");
+            byte[] base64Key = env.getProperty("TOKEN_SECRET").getBytes();
+            String expectedIssuer = env.getProperty("TOKEN_ISSUER");
 
             JwtParser parser = Jwts.parserBuilder()
                     .setSigningKey(base64Key)

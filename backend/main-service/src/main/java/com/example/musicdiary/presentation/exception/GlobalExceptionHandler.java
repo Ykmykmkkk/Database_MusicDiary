@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorMessage> handleConstraintViolatedException(
             ConstraintViolationException ex
     ){
-        System.out.println("ConstraintViolationException handled!"); // 디버깅 로그
+        System.out.println("ConstraintViolationException handled!");
       Set<ConstraintViolation<?>> constraintViolations = ex.getConstraintViolations();
       List<String> errors = constraintViolations.stream().map(
               constraintViolation -> extractField(constraintViolation.getPropertyPath()) + ", " + constraintViolation.getMessage()

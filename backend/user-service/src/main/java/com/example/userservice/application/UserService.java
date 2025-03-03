@@ -1,10 +1,9 @@
-package com.example.musicdiary.service;
+package com.example.userservice.application;
 
-import com.example.musicdiary.common.UserDto;
-import com.example.musicdiary.domain.UserEntity;
-import com.example.musicdiary.repository.UserRepository;
-
-import com.example.musicdiary.security.CustomUserDetails;
+import com.example.userservice.common.UserDto;
+import com.example.userservice.domain.UserEntity;
+import com.example.userservice.repository.UserRepository;
+import com.example.userservice.security.CustomUserDetails;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,19 +15,19 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
 
-    private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
     private final ValidationService validationService;
+    private final UserRepository userRepository;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserEntity userEntity = userRepository.findByUsername(username).orElseThrow(
-                ()-> new UsernameNotFoundException("해당 회원이 존재하지 않습니다.")
-        );
+        UserEntity userEntity = userRepository.findByUsername(username).orElseThrow(()->new UsernameNotFoundException("해당 회원이 존재하지 않습니다."));
         return new CustomUserDetails(
                 userEntity.getId(),
                 userEntity.getUsername(),
@@ -37,12 +36,14 @@ public class UserService implements UserDetailsService {
                 //userEntity.getAuthorities(),
                 true,true,true,true);
     }
+
     @Transactional
     public void registerUser(UserDto userDto) {
         try {
             String encodedPassword = bCryptPasswordEncoder.encode(userDto.getPassword());
 
             UserEntity userEntity = UserEntity.builder()
+                    .id(UUID.randomUUID())
                     .username(userDto.getUsername())
                     .password(encodedPassword)
                     .email(userDto.getEmail())
@@ -59,11 +60,6 @@ public class UserService implements UserDetailsService {
 
     public void checkDuplicate(UserDto duplicateUserDto) {
         String username = duplicateUserDto.getUsername();
-        isDuplicated(username);
-    }
-
-
-    private void isDuplicated(String username) {
         if (userRepository.existsByUsernameAndDeleted(username, false)) {
             throw new IllegalArgumentException("이미 존재하는 회원입니다.");
         }
@@ -85,7 +81,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional(readOnly = true)
-    public UserEntity getUserEntityByUserId(Long userId) {
+    public UserEntity getUserEntityByUserId(UUID userId) {
         return userRepository.findByIdAndDeleted(userId, false)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
     }
@@ -93,4 +89,3 @@ public class UserService implements UserDetailsService {
 
 
 }
-

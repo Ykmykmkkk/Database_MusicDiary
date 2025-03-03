@@ -3,7 +3,7 @@ package com.example.musicdiary.presentation.controller;
 import com.example.musicdiary.common.ReviewDto;
 import com.example.musicdiary.presentation.dto.request.CreateReviewRequestDto;
 import com.example.musicdiary.presentation.dto.response.ReviewResponseDto;
-import com.example.musicdiary.service.ReviewService;
+import com.example.musicdiary.application.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.format.annotation.DateTimeFormat;

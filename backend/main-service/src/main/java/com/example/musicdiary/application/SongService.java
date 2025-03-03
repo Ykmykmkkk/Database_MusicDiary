@@ -1,4 +1,4 @@
-package com.example.musicdiary.service;
+package com.example.musicdiary.application;
 
 import com.example.musicdiary.common.SongDto;
 import com.example.musicdiary.domain.SongEntity;
