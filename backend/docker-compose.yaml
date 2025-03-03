@@ -1,38 +1,53 @@
 version: '3.8'
+
 services:
-  gateway-service:
-    build: ./gateway-service
-    ports:
-      - "8000:8000"
-    depends_on:
-      app:
-        condition: service_started
-
-  discovery-service:
-    build: ./discovery-service
-    ports:
-      - "8761:8761"
-
-  app:
-    build: ./main-service
-    ports:
+   gateway-service:
+     image: eclipse-temurin:17-jdk
+     volumes:
+       - ./gateway-service:/app
+       - gateway-gradle-cache:/home/gradle/.gradle  # Gradle 캐시 유지
+     working_dir: /app
+     command: ["sh", "-c", "chmod +x ./gradlew && ./gradlew bootRun --no-daemon"] # Gradle로 실행
+     env_file:
+       - ./env/gateway-service.env
+     ports:
+       - "8000:8000"
+     depends_on:
+       discovery-service:
+         condition: service_started  
+       app:
+         condition: service_started 
+   discovery-service:
+     image: eclipse-temurin:17-jdk
+     volumes:
+       - ./discovery-service:/app
+       - discovery-gradle-cache:/home/gradle/.gradle 
+     working_dir: /app
+     command: ["sh", "-c", "chmod +x ./gradlew && ./gradlew bootRun --no-daemon"]
+     env_file:
+       - ./env/discovery-service.env
+     ports:
+       - "8761:8761"
+   app:
+     image: eclipse-temurin:17-jdk
+     volumes:
+       - ./main-service:/app
+       - app-gradle-cache:/home/gradle/.gradle  
+     working_dir: /app
+     command: ./gradlew bootRun --no-daemon  
+     env_file:
+       - ./env/app.env
+     ports:
       - "8080:8080"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://maindb:3306/musicdiary
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: 0000
-    depends_on:
-      discovery-service:
+     depends_on:
+       maindb:
         condition: service_started
-      maindb:
-        condition: service_healthy
-
-  maindb:
+   maindb:
     image: mysql
     ports:
-      - "3307:3306"
+      - "3305:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: 0000
+      MYSQL_ROOT_PASSWORD: '0000'
       MYSQL_DATABASE: musicdiary
     volumes:
       - db:/var/lib/mysql
@@ -42,12 +57,12 @@ services:
       timeout: 5s
       retries: 10
 
-  userdb:
+   userdb:
     image: mysql
     ports:
-      - "3308:3306"
+      - "3307:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: 0000
+      MYSQL_ROOT_PASSWORD: '0000'
       MYSQL_DATABASE: users
     volumes:
       - userdb:/var/lib/mysql
@@ -60,3 +75,6 @@ services:
 volumes:
   db:
   userdb:
+  gateway-gradle-cache: 
+  discovery-gradle-cache:  
+  app-gradle-cache: 
