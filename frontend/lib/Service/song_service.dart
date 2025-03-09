@@ -10,7 +10,7 @@ class SongService {
     try {
       var headers = {'Content-Type': 'application/json'};
       final response = await http.get(
-          Uri.parse('http://$hostAddress:8080/song/$title/$artist'),
+          Uri.parse('http://$hostAddress:8000/song/$title/$artist'),
           headers: headers);
       if (response.statusCode == 200) {
         final responseBody = utf8.decode(response.bodyBytes); // UTF-8 디코딩
@@ -31,7 +31,7 @@ class SongService {
       String releaseDate, String durationTime) async {
     var headers = {'Content-Type': 'application/json'};
     var request =
-        http.Request('POST', Uri.parse('http://$hostAddress:8080/song/create'));
+        http.Request('POST', Uri.parse('http://$hostAddress:8000/song/create'));
     request.body = json.encode({
       "title": title,
       "album": album,
@@ -61,7 +61,7 @@ class SongService {
       String username, String title, String artist) async {
     var headers = {'Content-Type': 'application/json', 'username': username};
     var request =
-        http.Request('POST', Uri.parse('http://$hostAddress:8080/song/like'));
+        http.Request('POST', Uri.parse('http://$hostAddress:8000/song/like'));
     request.body = json.encode({
       "title": title,
       "artist": artist,
@@ -88,7 +88,7 @@ class SongService {
       String username, String title, String artist) async {
     var headers = {'Content-Type': 'application/json', 'username': username};
     var request =
-        http.Request('POST', Uri.parse('http://$hostAddress:8080/song/unlike'));
+        http.Request('POST', Uri.parse('http://$hostAddress:8000/song/unlike'));
     request.body = json.encode({
       "title": title,
       "artist": artist,
@@ -116,7 +116,7 @@ class SongService {
     try {
       var headers = {'Content-Type': 'application/json', 'username': username};
       final response = await http.get(
-          Uri.parse('http://$hostAddress:8080/song/like'),
+          Uri.parse('http://$hostAddress:8000/song/like'),
           headers: headers);
       if (response.statusCode == 200) {
         final responseBody = utf8.decode(response.bodyBytes); // UTF-8 디코딩

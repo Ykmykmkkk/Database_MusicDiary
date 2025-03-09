@@ -2,7 +2,7 @@ package com.example.musicdiary.security;
 
 
 import com.example.musicdiary.presentation.dto.request.LoginRequestDto;
-import com.example.musicdiary.service.UserService;
+import com.example.musicdiary.application.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

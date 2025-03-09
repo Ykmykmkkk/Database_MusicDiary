@@ -3,7 +3,7 @@ package com.example.musicdiary.presentation.controller;
 import com.example.musicdiary.common.UserDto;
 import com.example.musicdiary.presentation.dto.request.RegisterUserRequestDto;
 import com.example.musicdiary.presentation.dto.request.DuplicateUserRequestDto;
-import com.example.musicdiary.service.UserService;
+import com.example.musicdiary.application.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
