@@ -101,7 +101,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         // JSON 본문 작성
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, String> responseBody = new HashMap<>();
-        responseBody.put("token", token);
+        responseBody.put("accessToken", token);
         response.getWriter().write(objectMapper.writeValueAsString(responseBody));
     }
 }

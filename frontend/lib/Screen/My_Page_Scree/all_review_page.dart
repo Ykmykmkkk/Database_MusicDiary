@@ -67,7 +67,7 @@ class _AllReviewPageState extends State<AllReviewPage> {
                     padding: const EdgeInsets.only(bottom: 16.0),
                     child: ReviewCardWidget(
                         reviewData: review,
-                        username: review.username,
+                        username: review.writerUsername,
                         songLiked: false,
                         reviewLiked: true,
                         onSongLikePressed: () {},

@@ -26,7 +26,7 @@ class _DayReviewPageState extends State<DayReviewPage> {
   void initState() {
     super.initState();
     String formattedDate = DateFormat('yyyy-MM-dd').format(widget.day);
-    review = ReviewService.getReviewDate(widget.username, formattedDate);
+    review = ReviewService.getReviewDate(formattedDate);
   }
 
   @override
@@ -67,8 +67,7 @@ class _DayReviewPageState extends State<DayReviewPage> {
                       songLiked = !songLiked;
                     });
                     try {
-                      await SongService.likeSong(
-                          widget.username, reviewData.title, reviewData.artist);
+                      await SongService.likeSong(reviewData.songArtist);
                     } catch (e) {
                       showMessageDialog(context, "이미 좋아요한 노래입니다");
                     }
@@ -80,8 +79,7 @@ class _DayReviewPageState extends State<DayReviewPage> {
                     try {
                       String formmatedDate = DateFormat('yyyy-MM-dd')
                           .format(reviewData.reviewDate);
-                      await ReviewService.likeReview(
-                          widget.username, formmatedDate, reviewData.username);
+                      await ReviewService.likeReview();
                     } catch (e) {
                       showMessageDialog(context, "이미 좋아요한 리뷰입니다.");
                     }
