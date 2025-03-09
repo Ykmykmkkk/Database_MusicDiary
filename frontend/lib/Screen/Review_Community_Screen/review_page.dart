@@ -68,30 +68,29 @@ class _ReviewPageState extends State<ReviewPage> {
                   padding: const EdgeInsets.only(bottom: 16.0),
                   child: ReviewCardWidget(
                     reviewData: review,
-                    username: review.username,
+                    username: review.writerUsername,
                     songLiked: review.songLiked, // 초기 상태
-                    reviewLiked: review.reviewLiked, // 초기 상태
+                    reviewLiked: review.isLike, // 초기 상태
                     onSongLikePressed: () async {
                       setState(() {
                         review.songLiked = !review.songLiked;
                       });
                       try {
-                        await SongService.likeSong(
-                            widget.username, review.title, review.artist);
+                        await SongService.likeSong(1);
                       } catch (e) {
                         showErrorDialog(context, "이미 좋아요한 노래입니다");
                       }
                     },
                     onReviewLikePressed: () async {
                       setState(() {
-                        review.reviewLiked = !review.reviewLiked;
+                        review.isLike = !review.isLike;
                       });
                       try {
                         String formattedDate =
                             DateFormat('yyyy-MM-dd').format(review.reviewDate);
 
-                        await ReviewService.likeReview(
-                            widget.username, formattedDate, review.username);
+                        await ReviewService.likeReview(widget.username,
+                            formattedDate, review.writerUsername);
                       } catch (e) {
                         showErrorDialog(context, "이미 좋아요한 리뷰입니다");
                       }

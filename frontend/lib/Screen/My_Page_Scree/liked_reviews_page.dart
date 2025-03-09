@@ -18,7 +18,7 @@ class _LikedReviewsPageState extends State<LikedReviewsPage> {
   void initState() {
     super.initState();
     // 좋아요한 노래 데이터를 서버 또는 데이터베이스에서 가져옴
-    likedReviews = ReviewService.getLikedReviews(widget.username);
+    likedReviews = ReviewService.getLikedReviews();
   }
 
   @override
@@ -67,7 +67,7 @@ class _LikedReviewsPageState extends State<LikedReviewsPage> {
                     padding: const EdgeInsets.only(bottom: 16.0),
                     child: ReviewCardWidget(
                         reviewData: review,
-                        username: review.username,
+                        username: review.writerUsername,
                         songLiked: review.songLiked,
                         reviewLiked: true,
                         onSongLikePressed: () {
