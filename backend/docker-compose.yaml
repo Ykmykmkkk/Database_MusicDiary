@@ -15,8 +15,6 @@ services:
      depends_on:
        discovery-service:
          condition: service_started  
-       app:
-         condition: service_started 
    discovery-service:
      image: eclipse-temurin:17-jdk
      volumes:
@@ -28,19 +26,29 @@ services:
        - ./env/discovery-service.env
      ports:
        - "8761:8761"
-   app:
+   song-service:
      image: eclipse-temurin:17-jdk
      volumes:
-       - ./main-service:/app
-       - app-gradle-cache:/home/gradle/.gradle  
+       - ./song-service:/app
+       - song-gradle-cache:/home/gradle/.gradle  
      working_dir: /app
      command: ./gradlew bootRun --no-daemon  
      env_file:
-       - ./env/app.env
-     ports:
-      - "8080:8080"
+       - ./env/song-service.env
      depends_on:
-       maindb:
+       songdb:
+        condition: service_started
+   review-service:
+     image: eclipse-temurin:17-jdk
+     volumes:
+       - ./review-service:/app
+       - review-gradle-cache:/home/gradle/.gradle  
+     working_dir: /app
+     command: ./gradlew bootRun --no-daemon  
+     env_file:
+       - ./env/review-service.env
+     depends_on:
+       reviewdb:
         condition: service_started
    user-service:
      image: eclipse-temurin:17-jdk
@@ -51,27 +59,18 @@ services:
      command: ./gradlew bootRun --no-daemon  
      env_file:
        - ./env/user-service.env
-     ports:
-      - "8001:8080"
      depends_on:
        userdb:
         condition: service_started
 
-   maindb:
-    image: mysql
-    ports:
-      - "3305:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: '0000'
-      MYSQL_DATABASE: musicdiary
-    volumes:
-      - db:/var/lib/mysql
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
 
+#   redisdb:
+ #   image: redis
+  #  ports:
+   #   - "6379:6379"
+    #command: ["redis-server", "--requirepass", "0000"]
+    #volumes:
+     # - redisdb:/data
    userdb:
     image: mysql
     ports:
@@ -86,11 +85,42 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
-
+   songdb:
+    image: mysql
+    ports:
+      - "3309:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: '0000'
+      MYSQL_DATABASE: songs
+    volumes:
+      - songdb:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+   reviewdb:
+    image: mysql
+    ports:
+      - "3310:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: '0000'
+      MYSQL_DATABASE: reviews
+    volumes:
+      - reviewdb:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 volumes:
   db:
   userdb:
+  songdb:
+  reviewdb:
+  #redisdb:
   gateway-gradle-cache: 
   discovery-gradle-cache:  
   user-gradle-cache:  
-  app-gradle-cache: 
+  song-gradle-cache: 
+  review-gradle-cache: 

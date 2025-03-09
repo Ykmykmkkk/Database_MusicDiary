@@ -14,9 +14,11 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping()
+@RequestMapping("/")
 public class MainController {
     private final UserService userService;
+
+
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterUserRequestDto registerUserRequestDto) {
         // try catch 문을 사용하지 않고 uncheked exception 처리.

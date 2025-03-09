@@ -10,6 +10,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,9 +20,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     Environment env;
@@ -71,27 +73,35 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             throw new IllegalStateException("Principal must be an instance of CustomUserDetails");
         }
 
-        generateToken(response, customUserDetails.getId());
+        generateToken(response, customUserDetails);
 
-        chain.doFilter(request,response); // 후속 처리 진행
+        //chain.doFilter(request,response); // 후속 처리 진행
     }
-    protected void generateToken(HttpServletResponse response, UUID userId) throws IOException {
-        byte[] keyBytes = env.getProperty("TOKEN_SECRET").getBytes();
-        if (keyBytes.length < 64) {
-            throw new IllegalArgumentException("Secret key must be at least 512 bits (64 bytes) for HS512");
-        }
-        var key = Keys.hmacShaKeyFor(keyBytes);
+    protected void generateToken(HttpServletResponse response, CustomUserDetails customUserDetails) throws IOException {
+        String secret = env.getProperty("TOKEN_SECRET");
+        byte[] decodedKey = Base64.getDecoder().decode(secret); // Base64 디코딩
+        var key = Keys.hmacShaKeyFor(decodedKey);
+//        List<String> roles = customUserDetails.getAuthorities().stream()
+//                .map(GrantedAuthority::getAuthority) // "ROLE_USER" 같은 문자열 추출
+//                .collect(Collectors.toList());
 
         String token = Jwts.builder()
-                .setSubject(String.valueOf(userId))
+                .setSubject(String.valueOf(customUserDetails.getId()))
+                //.claim("roles", roles)
                 .setExpiration(new Date(System.currentTimeMillis()
-                        + Long.parseLong(env.getProperty("TOKEN_EXPRIATION_TIME"))))
+                        + Long.parseLong(env.getProperty("TOKEN_EXPIRATION_TIME"))))
                 .signWith(key, SignatureAlgorithm.HS512)
                 .setIssuer(env.getProperty("TOKEN_ISSUER"))
                 .compact(); // compact를 통해 Jwt 토큰을 생성
 
+
         response.addHeader("Authorization", "Bearer " + token);
-        response.setContentType("application/json");
-        response.getWriter().write("{\"token\": \"" + token + "\"}");
+        response.setContentType("application/json;charset=UTF-8");
+
+        // JSON 본문 작성
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("token", token);
+        response.getWriter().write(objectMapper.writeValueAsString(responseBody));
     }
 }

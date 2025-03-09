@@ -1,0 +1,68 @@
+package com.example.reviewservice.presentation.controller;
+
+import com.example.reviewservice.application.LikedReviewService;
+import com.example.reviewservice.common.ReviewDto;
+import com.example.reviewservice.presentation.dto.responseDto.ReviewResponseDto;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
+
+@RequiredArgsConstructor
+@RestController
+@RequestMapping("/")
+public class LikedReviewController {
+    private final LikedReviewService likedReviewService;
+    @PostMapping("/like/{reviewId}")
+    public ResponseEntity<?> setReviewLike(@RequestHeader("X-User-Id") UUID userId, @PathVariable Long reviewId) {
+        try {
+            likedReviewService.likeReview(userId, reviewId);
+            return ResponseEntity.ok().build();
+        }
+        catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/like/{reviewId}")
+    public ResponseEntity<?> setReviewUnLike(@RequestHeader("X-User-Id") UUID userId, @PathVariable Long reviewId) {
+
+        try {
+            likedReviewService.unlikeReview(userId, reviewId);
+            return ResponseEntity.ok().build();
+        }
+        catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
+    @GetMapping("/like/all")
+    public ResponseEntity<?> getReviewLike(@RequestHeader("X-User-Id") UUID userId) {
+        try {
+            List<ReviewDto> likedReviewDtoList = likedReviewService.getLikedReviewListByUserId(userId);
+            List<ReviewResponseDto> reviewResponseDtoList = likedReviewDtoList.stream()
+                    .map(reviewDto -> ReviewResponseDto.builder()
+                            .reviewId(reviewDto.getId())
+                            .reviewDate(reviewDto.getReviewDate())
+                            .songId(reviewDto.getSongId())
+                            .songArtist(reviewDto.getSongArtist())
+                            .songTitle(reviewDto.getSongTitle())
+                            .reviewTitle(reviewDto.getReviewTitle())
+                            .reviewContent(reviewDto.getReviewContent())
+                            .isPublic(reviewDto.getIsPublic())
+                            .isLike(true)
+                            .build()
+                    ).toList();
+
+            return ResponseEntity.ok(reviewResponseDtoList);
+        }
+        catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
+}

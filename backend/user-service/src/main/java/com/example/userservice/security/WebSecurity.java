@@ -35,7 +35,7 @@ public class WebSecurity {
 
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                                .requestMatchers("/user/login", "/user/register", "/user/duplicate", "/css/**", "/js/**").permitAll() // 인증 없이 접근 가능
+                                .requestMatchers("/login", "/register", "/duplicate", "/css/**", "/js/**").permitAll() // 인증 없이 접근 가능
                                 .anyRequest().permitAll()
                         //.anyRequest().authenticated() // 그 외 요청은 인증 필요
                 )

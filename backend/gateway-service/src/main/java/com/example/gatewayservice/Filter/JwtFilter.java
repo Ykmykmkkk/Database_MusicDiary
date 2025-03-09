@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHeaders;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import javax.crypto.SecretKey;
+import java.util.Base64;
 import java.util.Date;
 
 @Component
@@ -74,11 +77,14 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
     //userId 추출 및 토큰 검증 로직
     private String extractUserId(String jwt) {
         try {
-            byte[] base64Key = env.getProperty("TOKEN_SECRET").getBytes();
+            String secret = env.getProperty("TOKEN_SECRET");  // 환경변수에서 가져오기
+            byte[] decodedKey = Base64.getDecoder().decode(secret);
+            SecretKey signingKey = Keys.hmacShaKeyFor(decodedKey);
+
             String expectedIssuer = env.getProperty("TOKEN_ISSUER");
 
             JwtParser parser = Jwts.parserBuilder()
-                    .setSigningKey(base64Key)
+                    .setSigningKey(signingKey)
                     .build(); // JwtParser를 빌드 해 토큰 파싱. 토큰을 만들 때 사용한 byte 타입의 key를 넣어주어야 한다.
 
             Claims claims = parser.parseClaimsJws(jwt).getBody();

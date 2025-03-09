@@ -10,7 +10,7 @@ class AuthService {
     var duplicateCheck = false;
     var headers = {'Content-Type': 'application/json'};
     var request = http.Request(
-        'POST', Uri.parse('http://$hostAddress:8080/user/duplicate'));
+        'POST', Uri.parse('http://$hostAddress:8000/user/duplicate'));
     request.body = jsonEncode({"username": username});
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
@@ -28,7 +28,7 @@ class AuthService {
   }) async {
     var headers = {'Content-Type': 'application/json'};
     var request = http.Request(
-        'POST', Uri.parse('http://$hostAddress:8080/user/register'));
+        'POST', Uri.parse('http://$hostAddress:8000/user/register'));
     request.body = jsonEncode({
       "username": username,
       "password": password,
@@ -52,7 +52,7 @@ class AuthService {
       {required String username, required String password}) async {
     var headers = {'Content-Type': 'application/json'};
     var request =
-        http.Request('POST', Uri.parse('http://$hostAddress:8080/login'));
+        http.Request('POST', Uri.parse('http://$hostAddress:8000/user/login'));
     request.body = json.encode({
       "username": username,
       "password": password,
@@ -94,7 +94,7 @@ class AuthService {
       required String phone}) async {
     var headers = {'Content-Type': 'application/json'};
     var request = http.Request(
-        'POST', Uri.parse('http://$hostAddress:8080/user/find-username'));
+        'POST', Uri.parse('http://$hostAddress:8000/user/find-username'));
     request.body = json.encode({
       "name": name,
       "email": email,
@@ -135,7 +135,7 @@ class AuthService {
       required String newPassword}) async {
     var headers = {'Content-Type': 'application/json'};
     var request = http.Request(
-        'POST', Uri.parse('http://$hostAddress:8080/user/reset-password'));
+        'POST', Uri.parse('http://$hostAddress:8000/user/reset-password'));
     request.body = json.encode({
       "username": username,
       "name": name,
@@ -169,7 +169,7 @@ class AuthService {
   }) async {
     var headers = {'Content-Type': 'application/json', 'username': name};
     var request =
-        http.Request('PATCH', Uri.parse('http://$hostAddress:8080/user/'));
+        http.Request('PATCH', Uri.parse('http://$hostAddress:8000/user/'));
     request.body = jsonEncode({
       "name": name,
       "email": email,
@@ -188,7 +188,7 @@ class AuthService {
 
   static Future<void> delete(String username) async {
     final headers = {'Content-Type': 'application/json'};
-    final url = Uri.parse('http://$hostAddress:8080/user/delete');
+    final url = Uri.parse('http://$hostAddress:8000/user/delete');
     final body = jsonEncode({'username': username});
 
     try {

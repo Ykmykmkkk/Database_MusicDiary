@@ -4,7 +4,11 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -16,7 +20,7 @@ import java.util.UUID;
 @Table(name = "users")
 public class UserEntity {
     @Id
-    @Column(name = "user_id", columnDefinition = "BINARY(16)", nullable = false, updatable = false)
+    @Column(name = "id", columnDefinition = "BINARY(16)", nullable = false, updatable = false)
     UUID id;
 
     @Column(unique = true, nullable = false, length = 30)
@@ -37,6 +41,12 @@ public class UserEntity {
     @Column(columnDefinition = "boolean default false")
     private boolean deleted;
 
+    @Column(name = "user_role")
+    private String userRole;
+
+    public List<GrantedAuthority> getAuthorities() {
+        return Collections.singletonList(new SimpleGrantedAuthority(userRole));
+    }
     public void delete() {
         this.deleted = true;
     }

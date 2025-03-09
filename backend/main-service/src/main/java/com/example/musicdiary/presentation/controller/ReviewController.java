@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @RestController
@@ -22,7 +23,7 @@ public class ReviewController {
     private final ModelMapper modelMapper;
 
     @PostMapping("/create")
-    public ResponseEntity<?> createReview(@RequestHeader("X-User-Id") Long userId, @RequestBody CreateReviewRequestDto createReviewRequestDto) {
+    public ResponseEntity<?> createReview(@RequestHeader("X-User-Id") UUID userId, @RequestBody CreateReviewRequestDto createReviewRequestDto) {
         try {
             ReviewDto createReviewDto = modelMapper.map(createReviewRequestDto, ReviewDto.class);
             reviewService.createReview(userId, createReviewDto);
@@ -34,7 +35,7 @@ public class ReviewController {
     }
 
     @GetMapping("/{date}")
-    public ResponseEntity<?> getReviewDate(@RequestHeader("X-User-Id") Long userId, @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+    public ResponseEntity<?> getReviewDate(@RequestHeader("X-User-Id") UUID userId, @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
         try {
             ReviewDto reviewDto = reviewService.getReviewDate(userId, date);
             ReviewResponseDto reviewResponseDto = modelMapper.map(reviewDto, ReviewResponseDto.class);
@@ -46,7 +47,7 @@ public class ReviewController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAllReview(@RequestHeader("X-User-Id") Long userId) {
+    public ResponseEntity<?> getAllReview(@RequestHeader("X-User-Id") UUID userId) {
         try {
             List<ReviewDto> reviewDtoList = reviewService.getAllReview(userId);
             List<ReviewResponseDto> reviewResponseDtoList =
@@ -59,7 +60,7 @@ public class ReviewController {
     }
 
     @GetMapping("/public") //
-    public ResponseEntity<?> getPublicReview(@RequestHeader("X-User-Id") Long userId) {
+    public ResponseEntity<?> getPublicReview(@RequestHeader("X-User-Id") UUID userId) {
         try {
             List<ReviewDto> reviewDtoList = reviewService.getPublicReview();
             List<ReviewResponseDto> reviewResponseDtoList =
