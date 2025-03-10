@@ -5,7 +5,9 @@ eureka:
   client:
     register-with-eureka: true
     fetch-registry: true
-    defaultZone: http://127.0.0.1:8761/eureka
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
 
 spring:
   application:
@@ -19,25 +21,43 @@ spring:
             preLogger: True
             postLogger: True
       routes:
-        - id: main-service
-          uri: lb://MAIN-SERVICE/
+        - id: user-service
+          uri: lb://USER-SERVICE/
           predicates:
-            - Path=/main-service/login
+            - Path=/user/login
             - Method=POST
           filters:
               - RemoveRequestHeader=Cookie
-              - RewritePath=/main-service/(?<segment>.*), /$\{segment}
-        - id: main-service
-          uri: lb://MAIN-SERVICE/
+              - RewritePath=/user/(?<segment>.*), /$\{segment}
+        - id: user-service
+          uri: lb://USER-SERVICE/
           predicates:
-            - Path=/main-service/review/all
-            - Method=GET
+            - Path=/user/duplicate
+            - Method=POST
           filters:
-            - JwtFilter
-            - RewritePath=/main-service/(?<segment>.*), /$\{segment}
-token:
-  secret: mynameiskyeongminyeomcascascasavasvasvsvascascasajsnvnvsjkvnqvnqwiovnsaovknvakssa
-  issuer: user-service
+             - RemoveRequestHeader=Cookie
+             - RewritePath=/user/(?<segment>.*), /$\{segment}
+        - id: user-service
+          uri: lb://USER-SERVICE/
+          predicates:
+            - Path=/user/register
+            - Method=POST
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user/(?<segment>.*), /$\{segment}
+        - id: song-service
+          uri: lb://SONG-SERVICE/
+          predicates:
+            - Path=/song/**
+          filters:
+            - RewritePath=/song/(?<segment>.*), /$\{segment}
+        - id: review-service
+          uri: lb://REVIEW-SERVICE/
+          predicates:
+            - Path=/review/**
+          filters:
+            - RewritePath=/review/(?<segment>.*), /$\{segment}
+
 
               #        - id: user-service
 #          uri: lb://USER-SERVICE/

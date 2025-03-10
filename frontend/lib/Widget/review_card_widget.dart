@@ -69,14 +69,14 @@ class ReviewCardWidget extends StatelessWidget {
                         const SizedBox(width: 8),
                         Text.rich(
                           TextSpan(
-                            text: reviewData.title,
+                            text: reviewData.songTitle,
                             style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                             ),
                             children: [
                               TextSpan(
-                                text: " - ${reviewData.artist}",
+                                text: " - ${reviewData.songArtist}",
                                 style: const TextStyle(
                                   fontSize: 16,
                                   color: Colors.grey,

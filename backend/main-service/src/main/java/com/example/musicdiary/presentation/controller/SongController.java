@@ -3,17 +3,13 @@ package com.example.musicdiary.presentation.controller;
 
 import com.example.musicdiary.common.SongDto;
 import com.example.musicdiary.presentation.dto.request.CreateSongRequestDto;
-import com.example.musicdiary.presentation.dto.request.SetSongLikeRequestDto;
 import com.example.musicdiary.presentation.dto.response.SongResponseDto;
-import com.example.musicdiary.service.LikedSongService;
-import com.example.musicdiary.service.SongService;
+import com.example.musicdiary.application.SongService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

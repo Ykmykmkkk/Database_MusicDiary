@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:musicdiary/Model/review_model.dart';
+import 'package:musicdiary/Service/auth_service.dart';
 
 class ReviewService {
   static final hostAddress = dotenv.env['API_ADDRESS'];
@@ -16,7 +18,7 @@ class ReviewService {
       bool isPublic) async {
     var headers = {'Content-Type': 'application/json'};
     var request = http.Request(
-        'POST', Uri.parse('http://$hostAddress:8080/review/create'));
+        'POST', Uri.parse('http://$hostAddress:8000/review/create'));
     request.body = json.encode({
       "reviewDate": reviewDate,
       "username": username,
@@ -43,11 +45,15 @@ class ReviewService {
     }
   }
 
-  static Future<ReviewModel> getReviewDate(String username, String date) async {
+  static Future<ReviewModel> getReviewDate(String date) async {
     try {
-      var headers = {'Content-Type': 'application/json', 'username': username};
+      var token = await AuthService.loadToken();
+      var headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${token[1]}'
+      };
       final response = await http.get(
-          Uri.parse('http://$hostAddress:8080/review/$date'),
+          Uri.parse('http://$hostAddress:8000/review/$date'),
           headers: headers);
       if (response.statusCode == 200) {
         final responseBody = utf8.decode(response.bodyBytes); // UTF-8 디코딩
@@ -63,42 +69,14 @@ class ReviewService {
     }
   }
 
-  static Future<void> likeReview(
-      String username, String reviewDate, String reviewWriter) async {
-    var headers = {'Content-Type': 'application/json', 'username': username};
-    var request =
-        http.Request('POST', Uri.parse('http://$hostAddress:8080/review/like'));
-    request.body = json.encode({
-      "reviewDate": reviewDate,
-      "username": reviewWriter,
-    });
-    request.headers.addAll(headers);
-    try {
-      http.StreamedResponse response = await request.send();
-      String responseBody = await response.stream.bytesToString();
-      if (response.statusCode == 200) {
-        print("성공");
-        return;
-      } else {
-        print("실패");
-        print('ServerMessage: $responseBody');
-        throw Exception("Failed to like review: ${response.statusCode}");
-      }
-    } catch (e) {
-      print(e);
-      rethrow;
-    }
-  }
-
-  static Future<void> unlikeReview(
-      String username, String reviewDate, String reviewWriter) async {
-    var headers = {'Content-Type': 'application/json', 'username': username};
+  static Future<void> likeReview(String reviewId) async {
+    var token = await AuthService.loadToken();
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${token[1]}'
+    };
     var request = http.Request(
-        'POST', Uri.parse('http://$hostAddress:8080/review/unlike'));
-    request.body = json.encode({
-      "reviewDate": reviewDate,
-      "reviewWriter": reviewWriter,
-    });
+        'POST', Uri.parse('http://$hostAddress:8000/review/like/$reviewId'));
     request.headers.addAll(headers);
     try {
       http.StreamedResponse response = await request.send();
@@ -117,12 +95,42 @@ class ReviewService {
     }
   }
 
-  static Future<List<ReviewModel>> getLikedReviews(String username) async {
+  static Future<void> unlikeReview(String reviewId) async {
+    var token = await AuthService.loadToken();
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${token[1]}'
+    };
+    var request = http.Request('Delete',
+        Uri.parse('http://$hostAddress:8000/review/unlike/$reviewId'));
+    request.headers.addAll(headers);
+    try {
+      http.StreamedResponse response = await request.send();
+      String responseBody = await response.stream.bytesToString();
+      if (response.statusCode == 200) {
+        print("성공");
+        return;
+      } else {
+        print("실패");
+        print('ServerMessage: $responseBody');
+        throw Exception("Failed to like review: ${response.statusCode}");
+      }
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  static Future<List<ReviewModel>> getLikedReviews() async {
     List<ReviewModel> reviewInstances = [];
     try {
-      var headers = {'Content-Type': 'application/json', 'username': username};
+      var token = await AuthService.loadToken();
+      var headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${token[1]}'
+      };
       final response = await http.get(
-          Uri.parse('http://$hostAddress:8080/review/like'),
+          Uri.parse('http://$hostAddress:8000/review/like/all'),
           headers: headers);
       if (response.statusCode == 200) {
         final responseBody = utf8.decode(response.bodyBytes); // UTF-8 디코딩
@@ -144,12 +152,16 @@ class ReviewService {
     }
   }
 
-  static Future<List<ReviewModel>> getPublicReviews(String username) async {
+  static Future<List<ReviewModel>> getPublicReviews() async {
     List<ReviewModel> reviewInstances = [];
     try {
-      var headers = {'Content-Type': 'application/json', 'username': username};
+      var token = await AuthService.loadToken();
+      var headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${token[1]}'
+      };
       final response = await http.get(
-          Uri.parse('http://$hostAddress:8080/review/public'),
+          Uri.parse('http://$hostAddress:8000/review/public'),
           headers: headers);
       if (response.statusCode == 200) {
         final responseBody = utf8.decode(response.bodyBytes); // UTF-8 디코딩
@@ -173,9 +185,13 @@ class ReviewService {
   static Future<List<ReviewModel>> getAllReviews(String username) async {
     List<ReviewModel> reviewInstances = [];
     try {
-      var headers = {'Content-Type': 'application/json', 'username': username};
+      var token = await AuthService.loadToken();
+      var headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${token[1]}'
+      };
       final response = await http.get(
-          Uri.parse('http://$hostAddress:8080/review/all'),
+          Uri.parse('http://$hostAddress:8000/review/all'),
           headers: headers);
       if (response.statusCode == 200) {
         final responseBody = utf8.decode(response.bodyBytes); // UTF-8 디코딩

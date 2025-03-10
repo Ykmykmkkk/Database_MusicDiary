@@ -1,0 +1,126 @@
+version: '3.8'
+
+services:
+   gateway-service:
+     image: eclipse-temurin:17-jdk
+     volumes:
+       - ./gateway-service:/app
+       - gateway-gradle-cache:/home/gradle/.gradle  # Gradle 캐시 유지
+     working_dir: /app
+     command: ["sh", "-c", "chmod +x ./gradlew && ./gradlew bootRun --no-daemon"] # Gradle로 실행
+     env_file:
+       - ./env/gateway-service.env
+     ports:
+       - "8000:8000"
+     depends_on:
+       discovery-service:
+         condition: service_started  
+   discovery-service:
+     image: eclipse-temurin:17-jdk
+     volumes:
+       - ./discovery-service:/app
+       - discovery-gradle-cache:/home/gradle/.gradle 
+     working_dir: /app
+     command: ["sh", "-c", "chmod +x ./gradlew && ./gradlew bootRun --no-daemon"]
+     env_file:
+       - ./env/discovery-service.env
+     ports:
+       - "8761:8761"
+   song-service:
+     image: eclipse-temurin:17-jdk
+     volumes:
+       - ./song-service:/app
+       - song-gradle-cache:/home/gradle/.gradle  
+     working_dir: /app
+     command: ./gradlew bootRun --no-daemon  
+     env_file:
+       - ./env/song-service.env
+     depends_on:
+       songdb:
+        condition: service_started
+   review-service:
+     image: eclipse-temurin:17-jdk
+     volumes:
+       - ./review-service:/app
+       - review-gradle-cache:/home/gradle/.gradle  
+     working_dir: /app
+     command: ./gradlew bootRun --no-daemon  
+     env_file:
+       - ./env/review-service.env
+     depends_on:
+       reviewdb:
+        condition: service_started
+   user-service:
+     image: eclipse-temurin:17-jdk
+     volumes:
+       - ./user-service:/app
+       - user-gradle-cache:/home/gradle/.gradle  
+     working_dir: /app
+     command: ./gradlew bootRun --no-daemon  
+     env_file:
+       - ./env/user-service.env
+     depends_on:
+       userdb:
+        condition: service_started
+
+
+#   redisdb:
+ #   image: redis
+  #  ports:
+   #   - "6379:6379"
+    #command: ["redis-server", "--requirepass", "0000"]
+    #volumes:
+     # - redisdb:/data
+   userdb:
+    image: mysql
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: '0000'
+      MYSQL_DATABASE: users
+    volumes:
+      - userdb:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+   songdb:
+    image: mysql
+    ports:
+      - "3309:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: '0000'
+      MYSQL_DATABASE: songs
+    volumes:
+      - songdb:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+   reviewdb:
+    image: mysql
+    ports:
+      - "3310:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: '0000'
+      MYSQL_DATABASE: reviews
+    volumes:
+      - reviewdb:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+volumes:
+  db:
+  userdb:
+  songdb:
+  reviewdb:
+  #redisdb:
+  gateway-gradle-cache: 
+  discovery-gradle-cache:  
+  user-gradle-cache:  
+  song-gradle-cache: 
+  review-gradle-cache: 

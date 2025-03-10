@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
   static final hostAddress = dotenv.env['API_ADDRESS'];
@@ -10,7 +11,7 @@ class AuthService {
     var duplicateCheck = false;
     var headers = {'Content-Type': 'application/json'};
     var request = http.Request(
-        'POST', Uri.parse('http://$hostAddress:8080/user/duplicate'));
+        'POST', Uri.parse('http://$hostAddress:8000/user/duplicate'));
     request.body = jsonEncode({"username": username});
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
@@ -28,7 +29,7 @@ class AuthService {
   }) async {
     var headers = {'Content-Type': 'application/json'};
     var request = http.Request(
-        'POST', Uri.parse('http://$hostAddress:8080/user/register'));
+        'POST', Uri.parse('http://$hostAddress:8000/user/register'));
     request.body = jsonEncode({
       "username": username,
       "password": password,
@@ -52,7 +53,7 @@ class AuthService {
       {required String username, required String password}) async {
     var headers = {'Content-Type': 'application/json'};
     var request =
-        http.Request('POST', Uri.parse('http://$hostAddress:8080/login'));
+        http.Request('POST', Uri.parse('http://$hostAddress:8000/user/login'));
     request.body = json.encode({
       "username": username,
       "password": password,
@@ -69,6 +70,10 @@ class AuthService {
         throw Exception('Request timeout');
       });
       if (response.statusCode == 200) {
+        String responseBody = await response.stream.bytesToString();
+        var token = jsonDecode(responseBody);
+        await saveToken(token);
+
         return true;
       } else if (response.statusCode == 400) {
         return false;
@@ -94,7 +99,7 @@ class AuthService {
       required String phone}) async {
     var headers = {'Content-Type': 'application/json'};
     var request = http.Request(
-        'POST', Uri.parse('http://$hostAddress:8080/user/find-username'));
+        'POST', Uri.parse('http://$hostAddress:8000/user/find-username'));
     request.body = json.encode({
       "name": name,
       "email": email,
@@ -135,7 +140,7 @@ class AuthService {
       required String newPassword}) async {
     var headers = {'Content-Type': 'application/json'};
     var request = http.Request(
-        'POST', Uri.parse('http://$hostAddress:8080/user/reset-password'));
+        'POST', Uri.parse('http://$hostAddress:8000/user/reset-password'));
     request.body = json.encode({
       "username": username,
       "name": name,
@@ -169,7 +174,7 @@ class AuthService {
   }) async {
     var headers = {'Content-Type': 'application/json', 'username': name};
     var request =
-        http.Request('PATCH', Uri.parse('http://$hostAddress:8080/user/'));
+        http.Request('PATCH', Uri.parse('http://$hostAddress:8000/user/'));
     request.body = jsonEncode({
       "name": name,
       "email": email,
@@ -188,7 +193,7 @@ class AuthService {
 
   static Future<void> delete(String username) async {
     final headers = {'Content-Type': 'application/json'};
-    final url = Uri.parse('http://$hostAddress:8080/user/delete');
+    final url = Uri.parse('http://$hostAddress:8000/user/delete');
     final body = jsonEncode({'username': username});
 
     try {
@@ -211,5 +216,39 @@ class AuthService {
       print("예외 발생: $e");
       throw Exception("An error occurred while deleting the user.");
     }
+  }
+
+  static Future<void> saveToken(Map<String, dynamic> token) async {
+    List<String> tokenList = List.filled(3, '');
+    token.forEach((key, value) {
+      switch (key) {
+        case 'grantType':
+          tokenList[0] = value;
+          break;
+        case 'accessToken':
+          tokenList[1] = value;
+          break;
+        case 'refreshToken':
+          tokenList[2] = value;
+          break;
+      }
+    });
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('token', tokenList);
+    // responseBody에서 accessToken 추출
+
+    // SharedPreferences에 accessToken 저장
+  }
+
+  static Future<List<String>> loadToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getStringList('token')!;
+  }
+
+  static Future<bool> logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> emptyToken = List.empty();
+    await prefs.setStringList('token', emptyToken);
+    return true;
   }
 }
