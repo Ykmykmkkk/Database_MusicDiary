@@ -115,7 +115,7 @@ class SongService {
     }
   }
 
-  static Future<List<SongModel>> getLikedSongs(String username) async {
+  static Future<List<SongModel>> getLikedSongs() async {
     List<SongModel> songInstances = [];
     try {
       var token = await AuthService.loadToken();
@@ -136,6 +136,30 @@ class SongService {
           }
         }
         return songInstances;
+      } else {
+        print('ServerMessage: ${response.body}');
+        throw Exception('Failed to load song: ${response.statusCode}');
+      }
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  static Future<SongModel> isLikedSong(String songId) async {
+    try {
+      var token = await AuthService.loadToken();
+      var headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${token[1]}'
+      };
+      final response = await http.get(
+          Uri.parse('http://$hostAddress:8000/song/like/$songId'),
+          headers: headers);
+      if (response.statusCode == 200) {
+        final responseBody = utf8.decode(response.bodyBytes); // UTF-8 디코딩
+        SongModel song = jsonDecode(responseBody);
+        return song;
       } else {
         print('ServerMessage: ${response.body}');
         throw Exception('Failed to load song: ${response.statusCode}');

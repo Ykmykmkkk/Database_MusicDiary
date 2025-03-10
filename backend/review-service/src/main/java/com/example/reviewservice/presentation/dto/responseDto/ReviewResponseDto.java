@@ -20,8 +20,9 @@ public class ReviewResponseDto {
     private Long songId;
     private String songTitle;
     private String songArtist;
+    private Boolean songLike;
     private String reviewTitle;
     private String reviewContent;
     private Boolean isPublic;
-    private Boolean isLike;
+    private Boolean reviewLike;
 }

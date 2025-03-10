@@ -36,9 +36,7 @@ public class LikedSongService {
     }
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void unlikeSong(UUID userId, Long songId) {
-        SongEntity song =
-                songService.getSongEntityById(songId);
-        LikedSongEntity likedSongEntity = likedSongRepository.findByUserIdAndSongEntity(userId, song)
+        LikedSongEntity likedSongEntity = likedSongRepository.findByUserIdAndSongEntityId(userId, songId)
                 .orElseThrow(() -> new EntityNotFoundException("LikedSongEntity not found"));
         likedSongRepository.delete(likedSongEntity);
     }
@@ -63,5 +61,10 @@ public class LikedSongService {
                         .isLike(isLike)
                         .build())
                 .toList();
+    }
+
+    public Boolean isLikedSong(UUID userId, Long songId) {
+        return likedSongRepository.existsByUserIdAndSongEntityId(userId,songId);
+        //return SongDto.builder().isLike(isLiked).build();
     }
 }

@@ -59,4 +59,13 @@ public class LikedSongController {
         }
     }
 
+    @GetMapping("/like/{songId}")
+    public Boolean isLikedSong(@RequestHeader("X-User-Id") UUID userId, @PathVariable Long songId) {
+        try {
+            return likedSongService.isLikedSong(userId, songId);
+        }
+        catch (Exception e) {
+            return false;
+        }
+    }
 }
