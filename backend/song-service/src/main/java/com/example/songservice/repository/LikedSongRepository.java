@@ -13,7 +13,7 @@ import java.util.UUID;
 public interface LikedSongRepository extends JpaRepository<LikedSongEntity,Long> {
     boolean existsByUserIdAndSongEntityId(UUID userId, Long songId);
 
-    Optional<LikedSongEntity> findByUserIdAndSongEntity(UUID userId, SongEntity song);
+    Optional<LikedSongEntity> findByUserIdAndSongEntityId(UUID userId, Long song);
 
     List<LikedSongEntity> findAllByUserId(UUID userId);
 }
