@@ -49,11 +49,8 @@ class _MusicDiaryPageState extends State<MusicDiaryPage> {
   void _onDayTap(DateTime day) {
     if (day.month == _selectedDate.month) {
       // 현재 월의 날짜만 처리
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  DayReviewPage(username: username, day: day)));
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => DayReviewPage(day: day)));
     }
   }
 

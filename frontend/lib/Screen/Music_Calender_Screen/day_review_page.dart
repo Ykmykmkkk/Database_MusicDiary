@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:musicdiary/Model/review_model.dart';
-import 'package:musicdiary/Model/song_model.dart';
 import 'package:musicdiary/Service/review_service.dart';
 import 'package:musicdiary/Service/song_service.dart';
 import 'package:musicdiary/Widget/custom_dialog_widget.dart';
 import 'package:musicdiary/Widget/review_card_widget.dart';
-import 'package:musicdiary/Service/review_service.dart';
 
 class DayReviewPage extends StatefulWidget {
   final DateTime day;
@@ -52,52 +50,47 @@ class _DayReviewPageState extends State<DayReviewPage> {
             );
           } else if (snapshot.hasData) {
             final reviewData = snapshot.data!;
-            return FutureBuilder<bool>(
-              future: SongService.isLikedSong(reviewData.songId),
-              builder: (context, songSnapshot) {
-                if (songSnapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                bool songLiked = songSnapshot.data ?? false;
-                return Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: SingleChildScrollView(
-                    child: ReviewCardWidget(
-                      reviewData: reviewData,
-                      username: reviewData.writerUsername,
-                      songLiked: songLiked,
-                      reviewLiked: reviewData.isLike,
-                      onSongLikePressed: () async {
-                        setState(() {
-                          songLiked = !songLiked;
-                        });
-                        try {
-                          await SongService.likeSong(reviewData.songArtist);
-                        } catch (e) {
-                          showMessageDialog(context, "이미 좋아요한 노래입니다");
-                        }
-                      },
-                      onReviewLikePressed: () async {
-                        setState(() {
-                          reviewData.isLike = !reviewData.isLike;
-                        });
-                        try {
-                          String formattedDate = DateFormat('yyyy-MM-dd')
-                              .format(reviewData.reviewDate);
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: SingleChildScrollView(
+                child: ReviewCardWidget(
+                  reviewData: reviewData,
+                  username: reviewData.writerUsername,
+                  songLiked: reviewData.songLiked,
+                  reviewLiked: reviewData.reviewLiked,
+                  onSongLikePressed: () async {
+                    try {
+                      if (reviewData.songLiked) {
+                        await SongService.unlikeSong(reviewData.songId);
+                      } else {
+                        await SongService.likeSong(reviewData.songId);
+                      }
+                      setState(() {
+                        reviewData.songLiked = !reviewData.songLiked;
+                      });
+                    } catch (e) {
+                      showMessageDialog(context, "좋아요 처리에 실패했습니다.");
+                    }
+                  },
+                  onReviewLikePressed: () async {
+                    try {
+                      String formattedDate = DateFormat('yyyy-MM-dd')
+                          .format(reviewData.reviewDate);
 
-                          if (reviewData.isLike) {
-                            await ReviewService.likeReview(formattedDate);
-                          } else {
-                            await ReviewService.unlikeReview(formattedDate);
-                          }
-                        } catch (e) {
-                          showMessageDialog(context, "이미 좋아요한 리뷰입니다.");
-                        }
-                      },
-                    ),
-                  ),
-                );
-              },
+                      if (reviewData.reviewLiked) {
+                        await ReviewService.unlikeReview(formattedDate);
+                      } else {
+                        await ReviewService.likeReview(formattedDate);
+                      }
+                      setState(() {
+                        reviewData.reviewLiked = !reviewData.reviewLiked;
+                      });
+                    } catch (e) {
+                      showMessageDialog(context, "좋아요 처리에 실패했습니다.");
+                    }
+                  },
+                ),
+              ),
             );
           } else {
             return const Center(

@@ -5,6 +5,7 @@ import com.example.songservice.common.SongDto;
 import com.example.songservice.presentation.dto.requestDto.SetSongLikeRequestDto;
 import com.example.songservice.presentation.dto.responseDto.SongResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,12 +61,13 @@ public class LikedSongController {
     }
 
     @GetMapping("/like/{songId}")
-    public Boolean isLikedSong(@RequestHeader("X-User-Id") UUID userId, @PathVariable Long songId) {
+    public ResponseEntity<Boolean> isLikedSong(@RequestHeader("X-User-Id") UUID userId, @PathVariable Long songId) {
         try {
-            return likedSongService.isLikedSong(userId, songId);
-        }
-        catch (Exception e) {
-            return false;
+            boolean isLiked = likedSongService.isLikedSong(userId, songId);
+            return ResponseEntity.ok(isLiked);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
         }
     }
+
 }

@@ -80,12 +80,10 @@ public class UserService implements UserDetailsService {
         userRepository.save(userEntity);
     }
 
-    @Transactional(readOnly = true)
-    public UserEntity getUserEntityByUserId(UUID userId) {
-        return userRepository.findByIdAndDeleted(userId, false)
+
+    public String getUsernameByUserId(UUID userId) {
+        UserEntity userEntity = userRepository.findByIdAndDeleted(userId, false)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+        return userEntity.getUsername();
     }
-
-
-
 }

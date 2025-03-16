@@ -1,9 +1,12 @@
 package com.example.reviewservice.application;
 
 import com.example.reviewservice.common.ReviewDto;
+import com.example.reviewservice.common.SongClient;
+import com.example.reviewservice.common.UserClient;
 import com.example.reviewservice.domain.ReviewEntity;
 import com.example.reviewservice.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +19,8 @@ import java.util.UUID;
 @Service
 public class ReviewService {
     private final ReviewRepository reviewRepository;
+    private final UserClient userClient;
+    private final SongClient songClient;
     @Transactional(readOnly = true)
     public List<ReviewDto> getAllReview(UUID userId) {
         List<ReviewEntity> reviewEntities = reviewRepository.findAllByWriterId(userId);
@@ -32,16 +37,10 @@ public class ReviewService {
         if (isExists) {
             throw new IllegalArgumentException("Already reviewed");
         }
-        Long songId = createReviewDto.getSongId();
-        String songTitle = createReviewDto.getSongTitle();
-        String songArtist = createReviewDto.getSongArtist();
         ReviewEntity reviewEntity = ReviewEntity.builder()
                 .reviewDate(createReviewDto.getReviewDate())
                 .writerId(userId)
-                .writerUsername(createReviewDto.getWriterUsername())
-                .songId(songId)
-                .songTitle(songTitle)
-                .songArtist(songArtist)
+                .songId(createReviewDto.getSongId())
                 .reviewTitle(createReviewDto.getReviewTitle())
                 .reviewContent(createReviewDto.getReviewContent())
                 .isPublic(createReviewDto.getIsPublic())
@@ -62,6 +61,12 @@ public class ReviewService {
     public ReviewDto getReviewDate(UUID userId, LocalDate date) {
         ReviewEntity reviewEntity = reviewRepository.findByWriterIdAndReviewDate(userId, date).
                 orElseThrow(() -> new IllegalArgumentException("리뷰가 존재하지 않습니다"));
+
+        ResponseEntity<String> userResponse = userClient.getUsername(userId);
+        String username = userResponse.getBody();
+
+        ResponseEntity<String> songResponse = songClient.isLikedSong(reviewEntity.getSongId());
+        String username = userResponse.getBody();
 
         return  ReviewDto.builder()
                 .id(reviewEntity.getId())

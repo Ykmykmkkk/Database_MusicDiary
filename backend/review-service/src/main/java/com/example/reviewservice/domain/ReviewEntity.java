@@ -21,11 +21,8 @@ public class ReviewEntity {
     private Long id;
     private LocalDate reviewDate;
     private UUID writerId;
-    private String writerUsername;
 
     private Long songId;
-    private String songTitle;  // 노래 제목
-    private String songArtist; // 아티스트
 
     private String reviewTitle;
     private String reviewContent;

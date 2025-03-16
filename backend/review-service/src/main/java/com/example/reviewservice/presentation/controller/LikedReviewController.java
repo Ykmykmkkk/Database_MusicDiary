@@ -50,10 +50,11 @@ public class LikedReviewController {
                             .songId(reviewDto.getSongId())
                             .songArtist(reviewDto.getSongArtist())
                             .songTitle(reviewDto.getSongTitle())
+                            .songLiked(reviewDto.getSongLiked())
                             .reviewTitle(reviewDto.getReviewTitle())
                             .reviewContent(reviewDto.getReviewContent())
                             .isPublic(reviewDto.getIsPublic())
-                            .isLike(true)
+                            .reviewLiked(true)
                             .build()
                     ).toList();
 
