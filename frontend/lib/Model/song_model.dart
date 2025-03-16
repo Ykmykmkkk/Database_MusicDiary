@@ -1,4 +1,5 @@
 class SongModel {
+  final String songId;
   final String title; // 노래 제목
   final String album; // 앨범 제목
   final String artist; // 아티스트 정보
@@ -7,7 +8,8 @@ class SongModel {
   bool isLiked;
   // 생성자
   SongModel(
-      {required this.title,
+      {required this.songId,
+      required this.title,
       required this.album,
       required this.artist,
       required this.releaseDate,
@@ -17,6 +19,7 @@ class SongModel {
   // JSON 데이터에서 객체 생성 (역직렬화)
   factory SongModel.fromJson(Map<String, dynamic> json) {
     return SongModel(
+      songId: json['id'] ?? 'Unknown Id',
       title: json['title'] ?? 'Unknown Title',
       album: json['album'] ?? 'Unknown Album',
       artist: json['artist'] ?? 'Unknown Artist',

@@ -33,10 +33,11 @@ public class ReviewDto {
     private Long songId;          // 노래 ID
     private String songTitle;     // 노래 제목
     private String songArtist;    // 노래 아티스트
+    private Boolean songLiked;
 
     private String reviewTitle;
     private String reviewContent; // 리뷰 내용
     private Boolean isPublic;     // 공개 여부
 
-    private Boolean isLike; // 좋아요를 눌렀는지
+    private Boolean reviewLiked; // 좋아요를 눌렀는지
 }

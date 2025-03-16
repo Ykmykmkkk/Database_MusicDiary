@@ -21,25 +21,21 @@ class _ReviewPageState extends State<ReviewPage> {
   @override
   void initState() {
     super.initState();
-    // 비동기 데이터 로드
-    publicReviews = ReviewService.getPublicReviews(widget.username);
+    publicReviews = ReviewService.getPublicReviews();
   }
 
   @override
   Widget build(BuildContext context) {
-    bool songLiked = false;
     return Scaffold(
       appBar: AppBar(
         title: const Text("감상평 게시판"),
       ),
       body: FutureBuilder<List<ReviewModel>>(
-        future: publicReviews, // 비동기 데이터
+        future: publicReviews,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            // 로딩 상태
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            // 에러 상태x
             return Center(
               child: Text(
                 "오류가 발생했습니다: ${snapshot.error}",
@@ -49,7 +45,6 @@ class _ReviewPageState extends State<ReviewPage> {
           } else if (snapshot.hasData) {
             final reviews = snapshot.data!;
             if (reviews.isEmpty) {
-              // 데이터가 없는 경우
               return const Center(
                 child: Text(
                   "공개된 감상평이 없습니다.",
@@ -58,7 +53,6 @@ class _ReviewPageState extends State<ReviewPage> {
               );
             }
 
-            // 데이터가 있는 경우 리스트 렌더링
             return ListView.builder(
               padding: const EdgeInsets.all(16.0),
               itemCount: reviews.length,
@@ -69,45 +63,47 @@ class _ReviewPageState extends State<ReviewPage> {
                   child: ReviewCardWidget(
                     reviewData: review,
                     username: review.writerUsername,
-                    songLiked: review.songLiked, // 초기 상태
-                    reviewLiked: review.isLike, // 초기 상태
+                    songLiked: review.songLiked,
+                    reviewLiked: review.reviewLiked,
                     onSongLikePressed: () async {
-                      setState(() {
-                        review.songLiked = !review.songLiked;
-                      });
                       try {
-                        await SongService.likeSong(1);
+                        if (review.songLiked) {
+                          await SongService.unlikeSong(review.songId);
+                        } else {
+                          await SongService.likeSong(review.songId);
+                        }
+                        setState(() {
+                          review.songLiked = !review.songLiked;
+                        });
                       } catch (e) {
-                        showErrorDialog(context, "이미 좋아요한 노래입니다");
+                        showErrorDialog(context, "좋아요 처리 중 오류 발생");
                       }
                     },
                     onReviewLikePressed: () async {
-                      setState(() {
-                        review.isLike = !review.isLike;
-                      });
                       try {
-                        String formattedDate =
-                            DateFormat('yyyy-MM-dd').format(review.reviewDate);
-
-                        await ReviewService.likeReview(widget.username,
-                            formattedDate, review.writerUsername);
+                        if (review.reviewLiked) {
+                          await ReviewService.unlikeReview(review.reviewId);
+                        } else {
+                          await ReviewService.likeReview(review.reviewId);
+                        }
+                        setState(() {
+                          review.reviewLiked = !review.reviewLiked;
+                        });
                       } catch (e) {
-                        showErrorDialog(context, "이미 좋아요한 리뷰입니다");
+                        showErrorDialog(context, "좋아요 처리 중 오류 발생");
                       }
                     },
                   ),
                 );
               },
             );
-          } else {
-            // 데이터가 없는 경우 기본 처리
-            return const Center(
-              child: Text(
-                "데이터를 불러오지 못했습니다.",
-                style: TextStyle(fontSize: 18, color: Colors.grey),
-              ),
-            );
           }
+          return const Center(
+            child: Text(
+              "데이터를 불러오지 못했습니다.",
+              style: TextStyle(fontSize: 18, color: Colors.grey),
+            ),
+          );
         },
       ),
     );

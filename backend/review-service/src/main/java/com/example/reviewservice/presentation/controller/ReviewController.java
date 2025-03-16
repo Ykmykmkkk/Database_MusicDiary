@@ -48,17 +48,18 @@ public class ReviewController {
     public ResponseEntity<?> getReviewDate(@RequestHeader("X-User-Id") UUID userId, @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
         try {
             ReviewDto reviewDto = reviewService.getReviewDate(userId, date);
-            Boolean isLike = likedReviewService.isLike(userId, reviewDto.getId());
+            Boolean reviewLike = likedReviewService.isLike(userId, reviewDto.getId());
             ReviewResponseDto reviewResponseDto = ReviewResponseDto.builder()
                     .reviewId(reviewDto.getId())
                     .reviewDate(reviewDto.getReviewDate())
                     .songId(reviewDto.getSongId())
                     .songArtist(reviewDto.getSongArtist())
                     .songTitle(reviewDto.getSongTitle())
+                    .songLiked(reviewDto.getSongLiked())
                     .reviewTitle(reviewDto.getReviewTitle())
                     .reviewContent(reviewDto.getReviewContent())
                     .isPublic(reviewDto.getIsPublic())
-                    .isLike(isLike)
+                    .reviewLiked(reviewLike)
                     .build();
             return ResponseEntity.ok(reviewResponseDto);
         }
@@ -78,9 +79,10 @@ public class ReviewController {
                             .songId(reviewDto.getSongId())
                             .songArtist(reviewDto.getSongArtist())
                             .songTitle(reviewDto.getSongTitle())
+                            .songLiked(reviewDto.getSongLiked())
                             .reviewTitle(reviewDto.getReviewTitle())
                             .reviewContent(reviewDto.getReviewContent())
-                            .isLike(likedReviewService.isLike(userId, reviewDto.getId()))
+                            .reviewLiked(likedReviewService.isLike(userId, reviewDto.getId()))
                             .build()
                     ).toList();
             return ResponseEntity.ok(reviewResponseDtoList);
@@ -101,10 +103,11 @@ public class ReviewController {
                             .songId(reviewDto.getSongId())
                             .songArtist(reviewDto.getSongArtist())
                             .songTitle(reviewDto.getSongTitle())
+                            .songLiked(reviewDto.getSongLiked())
                             .reviewTitle(reviewDto.getReviewTitle())
                             .reviewContent(reviewDto.getReviewContent())
                             .isPublic(reviewDto.getIsPublic())
-                            .isLike(likedReviewService.isLike(userId, reviewDto.getId()))
+                            .reviewLiked(likedReviewService.isLike(userId, reviewDto.getId()))
                             .build()
                     ).toList();
             return ResponseEntity.ok(reviewResponseDtoList);

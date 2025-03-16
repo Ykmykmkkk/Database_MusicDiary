@@ -48,4 +48,21 @@ public class SongController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @GetMapping("/{songId}/") // 노래 제목과 아티스트만 반환해주는 거
+    public ResponseEntity<?> getSongTitleAndArtist( @PathVariable Long songId) {
+        try {
+            SongDto song = songService.getSongById(songId);
+            SongResponseDto songResponseDto = SongResponseDto.builder()
+                    .title(song.getTitle())
+                    .artist(song.getArtist())
+                    .build();
+            return ResponseEntity.ok(songResponseDto);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
+
 }

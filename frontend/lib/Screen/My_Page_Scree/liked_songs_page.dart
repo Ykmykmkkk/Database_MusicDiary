@@ -24,7 +24,7 @@ class _LikedSongsPageState extends State<LikedSongsPage> {
 
   // 데이터를 불러오고 currentSongs에 저장
   void _fetchLikedSongs() async {
-    likedSongs = SongService.getLikedSongs(widget.username);
+    likedSongs = SongService.getLikedSongs();
     likedSongs.then((songs) {
       setState(() {
         currentSongs = songs;
@@ -37,7 +37,7 @@ class _LikedSongsPageState extends State<LikedSongsPage> {
   // 좋아요 취소 함수
   void _unlikeSong(SongModel song) async {
     try {
-      await SongService.unlikeSong(widget.username, song.title, song.artist);
+      await SongService.unlikeSong(song.songId);
       setState(() {
         currentSongs.remove(song); // 리스트에서 제거
       });

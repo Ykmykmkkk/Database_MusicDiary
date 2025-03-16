@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -45,4 +46,11 @@ public class MainController {
             userService.deleteUser(username);
             return ResponseEntity.status(HttpStatus.OK).body("UserEntity deleted success");
     }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<?> getUsername(@RequestHeader("X-User-Id") UUID userId){
+        String username = userService.getUsernameByUserId(userId);
+        return ResponseEntity.ok(username);
+    }
+
 }

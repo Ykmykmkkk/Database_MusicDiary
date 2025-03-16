@@ -48,4 +48,10 @@ public class SongService {
     public SongEntity getSongEntityById(Long songId) {
         return songRepository.findById(songId).orElseThrow(() -> new IllegalArgumentException("노래가 존재하지 않습니다"));
     }
+
+    public SongDto getSongById(Long songId) {
+        SongEntity songEntity = songRepository.findById(songId).orElseThrow(
+                () -> new IllegalArgumentException("노래가 존재하지 않습니다"));
+        return SongDto.builder().title(songEntity.getTitle()).artist(songEntity.getArtist()).build();
+    }
 }
