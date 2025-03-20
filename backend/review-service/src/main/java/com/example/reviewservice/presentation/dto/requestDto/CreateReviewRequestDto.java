@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Data
 public class CreateReviewRequestDto {
@@ -11,14 +12,10 @@ public class CreateReviewRequestDto {
     @NotNull
     private LocalDate reviewDate;
     @NotNull
-    private String writerUsername;
+    private UUID writerId;
 
     @NotNull
     private Long songId;
-    @NotNull
-    private String songTitle;
-    @NotNull
-    private String songArtist;
 
     @NotNull
     private String reviewTitle;

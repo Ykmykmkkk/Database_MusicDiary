@@ -1,5 +1,5 @@
 class SongModel {
-  final String songId;
+  final int songId;
   final String title; // 노래 제목
   final String album; // 앨범 제목
   final String artist; // 아티스트 정보

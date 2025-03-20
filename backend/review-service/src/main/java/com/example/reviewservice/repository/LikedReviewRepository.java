@@ -6,7 +6,6 @@ import com.example.reviewservice.domain.ReviewEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -17,5 +16,5 @@ public interface LikedReviewRepository extends JpaRepository<LikedReviewEntity, 
 
     Optional<LikedReviewEntity> findByUserIdAndReviewEntity(UUID userId, ReviewEntity reviewEntity);
 
-    Boolean findByUserIdAndReviewEntityId(UUID userId, Long reviewId);
+    Boolean existsByUserIdAndReviewEntityId(UUID userId, Long reviewId);
 }

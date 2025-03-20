@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:musicdiary/Model/song_model.dart';
+import 'package:musicdiary/Provider/UserProvider.dart';
 import 'package:musicdiary/Service/review_service.dart';
 import 'package:musicdiary/Widget/custom_dialog_widget.dart';
+import 'package:provider/provider.dart';
 import 'find_music_page.dart'; // FindMusicPage를 import
 
 class TodayMusicPage extends StatefulWidget {
+  final String userId;
   final String username;
-  const TodayMusicPage({super.key, required this.username});
+  const TodayMusicPage(
+      {super.key, required this.userId, required this.username});
 
   @override
   State<TodayMusicPage> createState() => _TodayMusicPageState();
@@ -19,6 +23,7 @@ class _TodayMusicPageState extends State<TodayMusicPage> {
   final TextEditingController _reviewController = TextEditingController();
   late String today;
   late String todayy;
+  late String userId;
   @override
   void initState() {
     // TODO: implement initState
@@ -26,6 +31,7 @@ class _TodayMusicPageState extends State<TodayMusicPage> {
     DateTime now = DateTime.now();
     today = DateFormat('yyyy-MM-dd').format(now);
     todayy = DateFormat('yyyy/MM/dd E', 'ko_KR').format(now);
+    userId = widget.userId;
   }
 
   @override
@@ -160,13 +166,8 @@ class _TodayMusicPageState extends State<TodayMusicPage> {
                   }
 
                   try {
-                    ReviewService.createReview(
-                        today,
-                        widget.username,
-                        selectedSong!.title,
-                        selectedSong!.artist,
-                        _reviewController.text,
-                        isPublic);
+                    ReviewService.createReview(today, userId,
+                        selectedSong!.songId, _reviewController.text, isPublic);
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text("감상평이 저장되었습니다.")),
                     );

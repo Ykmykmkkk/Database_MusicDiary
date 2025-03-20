@@ -18,6 +18,6 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
 
     Optional<ReviewEntity> findByWriterIdAndReviewDate(UUID userId, LocalDate date);
 
-    boolean existsByWriterUsernameAndReviewDate(String username, LocalDate reviewDate);
+    boolean existsByWriterIdAndReviewDate(UUID userId, LocalDate reviewDate);
 
 }

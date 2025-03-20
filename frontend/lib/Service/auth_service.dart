@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:musicdiary/Provider/UserProvider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
@@ -71,9 +72,9 @@ class AuthService {
       });
       if (response.statusCode == 200) {
         String responseBody = await response.stream.bytesToString();
-        var token = jsonDecode(responseBody);
-        await saveToken(token);
-
+        var data = jsonDecode(responseBody);
+        await saveUserData(data['userId'], data['username']);
+        await saveToken(data);
         return true;
       } else if (response.statusCode == 400) {
         return false;
@@ -191,16 +192,14 @@ class AuthService {
     }
   }
 
-  static Future<void> delete(String username) async {
+  static Future<void> delete() async {
     final headers = {'Content-Type': 'application/json'};
     final url = Uri.parse('http://$hostAddress:8000/user/delete');
-    final body = jsonEncode({'username': username});
 
     try {
       final response = await http.patch(
         url,
         headers: headers,
-        body: body,
       );
 
       if (response.statusCode == 200) {
@@ -216,6 +215,12 @@ class AuthService {
       print("예외 발생: $e");
       throw Exception("An error occurred while deleting the user.");
     }
+  }
+
+  static Future<void> saveUserData(String userId, String username) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userId', userId);
+    await prefs.setString('username', username);
   }
 
   static Future<void> saveToken(Map<String, dynamic> token) async {
@@ -235,9 +240,6 @@ class AuthService {
     });
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setStringList('token', tokenList);
-    // responseBody에서 accessToken 추출
-
-    // SharedPreferences에 accessToken 저장
   }
 
   static Future<List<String>> loadToken() async {
@@ -245,10 +247,10 @@ class AuthService {
     return prefs.getStringList('token')!;
   }
 
-  static Future<bool> logout() async {
+  static Future<bool> logout(UserProvider userProvider) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> emptyToken = List.empty();
-    await prefs.setStringList('token', emptyToken);
+    await prefs.remove('token'); //  SharedPreferences에서 토큰 삭제
+    userProvider.clearUserData(); // Provider 초기화
     return true;
   }
 }

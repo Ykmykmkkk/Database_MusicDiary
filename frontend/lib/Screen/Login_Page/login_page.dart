@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:musicdiary/Provider/UserProvider.dart';
 import 'package:musicdiary/Screen/Login_Page/main_page.dart';
 import 'package:musicdiary/Screen/Login_Page/register_page.dart';
 import 'package:musicdiary/Service/auth_service.dart';
 import 'package:musicdiary/Widget/custom_dialog_widget.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -35,10 +38,11 @@ class _LoginPageState extends State<LoginPage> {
       isLoading = false;
     });
     if (login) {
+      if (!mounted) return; // UserProvider에 userId, username을 저장
+
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(
-            builder: (context) => MainPage(username: controllerUsername.text)),
+        MaterialPageRoute(builder: (context) => const MainPage()),
         (Route<dynamic> route) => false,
       );
     } else {

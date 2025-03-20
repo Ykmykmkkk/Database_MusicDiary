@@ -41,6 +41,9 @@ class _UploadSongPageState extends State<UploadSongPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("노래가 성공적으로 추가되었습니다!")),
       );
+      if (mounted) {
+        Navigator.pop(context);
+      }
     } catch (e) {
       print("오류잡았다");
       showErrorDialog(context, "해당 음악은 이미 존재합니다");

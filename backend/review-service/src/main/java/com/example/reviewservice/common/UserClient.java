@@ -10,6 +10,6 @@ import java.util.UUID;
 @FeignClient(name = "user-service")
 public interface UserClient {
 
-    @GetMapping("/{userId}/")
-    ResponseEntity<String> getUsername(@PathVariable UUID userId);
+    @GetMapping("/{userId}") // writerUsername 가져오기
+    ResponseEntity<String> getUsername(@PathVariable("userId") UUID userId);
 }

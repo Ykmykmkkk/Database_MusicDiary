@@ -15,6 +15,7 @@ services:
      depends_on:
        discovery-service:
          condition: service_started  
+         
    discovery-service:
      image: eclipse-temurin:17-jdk
      volumes:

@@ -7,9 +7,9 @@ import 'package:musicdiary/Widget/review_card_widget.dart';
 import 'package:musicdiary/Service/review_service.dart';
 
 class ReviewPage extends StatefulWidget {
+  final String userId;
   final String username;
-
-  const ReviewPage({super.key, required this.username});
+  const ReviewPage({super.key, required this.userId, required this.username});
 
   @override
   State<ReviewPage> createState() => _ReviewPageState();

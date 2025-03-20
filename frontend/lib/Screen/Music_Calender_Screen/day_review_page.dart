@@ -78,9 +78,9 @@ class _DayReviewPageState extends State<DayReviewPage> {
                           .format(reviewData.reviewDate);
 
                       if (reviewData.reviewLiked) {
-                        await ReviewService.unlikeReview(formattedDate);
+                        await ReviewService.unlikeReview(reviewData.reviewId);
                       } else {
-                        await ReviewService.likeReview(formattedDate);
+                        await ReviewService.likeReview(reviewData.reviewId);
                       }
                       setState(() {
                         reviewData.reviewLiked = !reviewData.reviewLiked;

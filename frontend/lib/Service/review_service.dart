@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ffi';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
@@ -9,24 +8,24 @@ import 'package:musicdiary/Service/auth_service.dart';
 class ReviewService {
   static final hostAddress = dotenv.env['API_ADDRESS'];
 
-  static Future<void> createReview(
-      String reviewDate,
-      String username,
-      String songTitle,
-      String songArtist,
-      String reviewContent,
-      bool isPublic) async {
-    var headers = {'Content-Type': 'application/json'};
+  static Future<void> createReview(String reviewDate, String userId, int songId,
+      String reviewContent, bool isPublic) async {
+    var token = await AuthService.loadToken();
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${token[1]}'
+    };
     var request = http.Request(
         'POST', Uri.parse('http://$hostAddress:8000/review/create'));
     request.body = json.encode({
       "reviewDate": reviewDate,
-      "username": username,
-      "songTitle": songTitle,
-      "songArtist": songArtist,
+      "writerId": userId,
+      "songId": songId,
+      "reviewTitle": "임시제목",
       "reviewContent": reviewContent,
       "isPublic": isPublic,
     });
+    print(request.body);
     request.headers.addAll(headers);
     try {
       http.StreamedResponse response = await request.send();
@@ -52,6 +51,7 @@ class ReviewService {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ${token[1]}'
       };
+      print(headers);
       final response = await http.get(
           Uri.parse('http://$hostAddress:8000/review/$date'),
           headers: headers);
@@ -69,7 +69,7 @@ class ReviewService {
     }
   }
 
-  static Future<void> likeReview(String reviewId) async {
+  static Future<void> likeReview(int reviewId) async {
     var token = await AuthService.loadToken();
     var headers = {
       'Content-Type': 'application/json',
@@ -95,7 +95,7 @@ class ReviewService {
     }
   }
 
-  static Future<void> unlikeReview(String reviewId) async {
+  static Future<void> unlikeReview(int reviewId) async {
     var token = await AuthService.loadToken();
     var headers = {
       'Content-Type': 'application/json',

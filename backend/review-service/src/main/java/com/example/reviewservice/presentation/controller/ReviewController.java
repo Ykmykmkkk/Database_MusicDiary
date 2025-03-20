@@ -4,10 +4,12 @@ package com.example.reviewservice.presentation.controller;
 import com.example.reviewservice.application.LikedReviewService;
 import com.example.reviewservice.application.ReviewService;
 import com.example.reviewservice.common.ReviewDto;
+import com.example.reviewservice.domain.ReviewEntity;
 import com.example.reviewservice.presentation.dto.requestDto.CreateReviewRequestDto;
 import com.example.reviewservice.presentation.dto.responseDto.ReviewResponseDto;
 import lombok.RequiredArgsConstructor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/")
+@Slf4j
 public class ReviewController {
     private final ReviewService reviewService;
     private final LikedReviewService likedReviewService;
@@ -27,15 +30,15 @@ public class ReviewController {
     @PostMapping("/create")
     public ResponseEntity<?> createReview(@RequestHeader("X-User-Id") UUID userId, @RequestBody CreateReviewRequestDto createReviewRequestDto) {
         try {
-            ReviewDto createReviewDto = ReviewDto.builder()
-                    .reviewTitle(createReviewRequestDto.getReviewTitle())
+            ReviewDto createReviewDto =  ReviewDto.builder()
                     .reviewDate(createReviewRequestDto.getReviewDate())
-                    .writerUsername(createReviewRequestDto.getWriterUsername())
+                    .writerId(createReviewRequestDto.getWriterId())
+                    .songId(createReviewRequestDto.getSongId())
+                    .reviewTitle(createReviewRequestDto.getReviewTitle())
                     .reviewContent(createReviewRequestDto.getReviewContent())
-                    .songTitle(createReviewRequestDto.getSongTitle())
-                    .songArtist(createReviewRequestDto.getSongArtist())
                     .isPublic(createReviewRequestDto.getIsPublic())
                     .build();
+
             reviewService.createReview(userId, createReviewDto);
             return ResponseEntity.status(HttpStatus.CREATED).body("reviewEntity created");
         }
@@ -47,8 +50,12 @@ public class ReviewController {
     @GetMapping("/{date}")
     public ResponseEntity<?> getReviewDate(@RequestHeader("X-User-Id") UUID userId, @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
         try {
+            log.info(userId + "|"+ date);
+            log.info("컨트롤러: 여기까지");
             ReviewDto reviewDto = reviewService.getReviewDate(userId, date);
+            log.info("컨트롤러: 여기까지2");
             Boolean reviewLike = likedReviewService.isLike(userId, reviewDto.getId());
+            log.info("컨트롤러: 여기까지3");
             ReviewResponseDto reviewResponseDto = ReviewResponseDto.builder()
                     .reviewId(reviewDto.getId())
                     .reviewDate(reviewDto.getReviewDate())
@@ -61,6 +68,7 @@ public class ReviewController {
                     .isPublic(reviewDto.getIsPublic())
                     .reviewLiked(reviewLike)
                     .build();
+            log.info("컨트롤러: 여기까지4");
             return ResponseEntity.ok(reviewResponseDto);
         }
         catch (Exception e) {

@@ -1,14 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:musicdiary/Provider/UserProvider.dart';
 import 'package:musicdiary/Screen/Login_Page/login_page.dart';
 import 'package:musicdiary/Screen/My_Page_Scree/all_review_page.dart';
 import 'package:musicdiary/Screen/My_Page_Scree/liked_reviews_page.dart';
 import 'package:musicdiary/Screen/My_Page_Scree/liked_songs_page.dart';
 import 'package:musicdiary/Service/auth_service.dart';
 import 'package:musicdiary/Widget/custom_dialog_widget.dart';
+import 'package:provider/provider.dart';
 
-class MyPage extends StatelessWidget {
+class MyPage extends StatefulWidget {
+  final String userId;
   final String username;
-  const MyPage({super.key, required this.username});
+  const MyPage({super.key, required this.userId, required this.username});
+
+  @override
+  State<MyPage> createState() => _MyPageState();
+}
+
+class _MyPageState extends State<MyPage> {
+  late String userId;
+  late String username;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    userId = widget.userId;
+    username = widget.username;
+  }
 
   void _logout(BuildContext context) async {
     showDialog(
@@ -53,7 +71,7 @@ class MyPage extends StatelessWidget {
               Navigator.of(context).pop();
               // 회원 탈퇴 후 처리 (예: 초기 화면으로 이동)
               try {
-                await AuthService.delete(username);
+                await AuthService.delete();
               } catch (e) {
                 showErrorDialog(context, "회원 탈퇴에 실패했습니다. 다시 시도해주세요");
               }
