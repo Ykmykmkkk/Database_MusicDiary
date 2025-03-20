@@ -10,7 +10,11 @@ class SongService {
   static final hostAddress = dotenv.env['API_ADDRESS'];
   static Future<SongModel> getSong(String title, String artist) async {
     try {
-      var headers = {'Content-Type': 'application/json'};
+      var token = await AuthService.loadToken();
+      var headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${token[1]}'
+      };
       final response = await http.get(
           Uri.parse('http://$hostAddress:8000/song/$title/$artist'),
           headers: headers);
@@ -36,6 +40,7 @@ class SongService {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${token[1]}'
     };
+    print(headers);
     var request =
         http.Request('POST', Uri.parse('http://$hostAddress:8000/song/create'));
     request.body = json.encode({
@@ -63,7 +68,7 @@ class SongService {
     }
   }
 
-  static Future<void> likeSong(String songId) async {
+  static Future<void> likeSong(int songId) async {
     var token = await AuthService.loadToken();
     var headers = {
       'Content-Type': 'application/json',
@@ -89,7 +94,7 @@ class SongService {
     }
   }
 
-  static Future<void> unlikeSong(String songId) async {
+  static Future<void> unlikeSong(int songId) async {
     var token = await AuthService.loadToken();
     var headers = {
       'Content-Type': 'application/json',
@@ -123,6 +128,7 @@ class SongService {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ${token[1]}'
       };
+      print(headers);
       final response = await http.get(
           Uri.parse('http://$hostAddress:8000/song/like/all'),
           headers: headers);
@@ -146,7 +152,7 @@ class SongService {
     }
   }
 
-  static Future<SongModel> isLikedSong(String songId) async {
+  static Future<SongModel> isLikedSong(int songId) async {
     try {
       var token = await AuthService.loadToken();
       var headers = {

@@ -2,11 +2,17 @@ package com.example.reviewservice.application;
 
 
 import com.example.reviewservice.common.ReviewDto;
+import com.example.reviewservice.common.SongClient;
+import com.example.reviewservice.common.SongResponseDto;
+import com.example.reviewservice.common.UserClient;
 import com.example.reviewservice.domain.LikedReviewEntity;
 import com.example.reviewservice.domain.ReviewEntity;
 import com.example.reviewservice.repository.LikedReviewRepository;
+import com.example.reviewservice.repository.ReviewRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,13 +23,16 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class LikedReviewService {
     private final LikedReviewRepository likedReviewRepository;
-    private final ReviewService reviewService;
+    private final UserClient userClient;
+    private final SongClient songClient;
+    private final ReviewRepository reviewRepository;
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void likeReview(UUID userId, Long reviewId) {
-        ReviewEntity reviewEntity = reviewService.getReviewEntityById(reviewId);
+        ReviewEntity reviewEntity = reviewRepository.findById(reviewId).orElseThrow(() -> new IllegalArgumentException("리뷰가 존재하지 않습니다"));
         LikedReviewEntity likedReviewEntity = LikedReviewEntity.builder()
                 .userId(userId)
                 .reviewEntity(reviewEntity)
@@ -41,27 +50,45 @@ public class LikedReviewService {
 
     public List<ReviewDto> toResponseDtoList(List<ReviewEntity> reviewEntities) {
         return reviewEntities.stream()
-                .map(review -> ReviewDto.builder()
-                        .writerUsername(review.getWriterUsername())
-                        .reviewDate(review.getReviewDate())
-                        .reviewTitle(review.getReviewTitle())
-                        .reviewContent(review.getReviewContent())
-                        .songId(review.getSongId())
-                        .songTitle(review.getSongTitle())
-                        .songArtist(review.getSongArtist())
-                        .isPublic(review.getIsPublic())
-                        .isLike(true)
-                        .build()).toList();
+                .map(review -> {
+                            ResponseEntity<String> userResponse = userClient.getUsername(review.getWriterId());
+                            String writerUsername = userResponse.getBody();
+
+                            ResponseEntity<SongResponseDto> songResponse =
+                                    songClient.getSongTitleAndArtist(review.getSongId());
+                            SongResponseDto songData = songResponse.getBody();
+
+                            ResponseEntity<Boolean> songLikeResponse = songClient.isLikedSong(review.getSongId());
+                            Boolean songLiked = songLikeResponse.getBody();
+
+                            return ReviewDto.builder()
+                                    .writerUsername(writerUsername)
+                                    .reviewDate(review.getReviewDate())
+                                    .reviewTitle(review.getReviewTitle())
+                                    .reviewContent(review.getReviewContent())
+                                    .songId(review.getSongId())
+                                    .songTitle(songData.getTitle())
+                                    .songArtist(songData.getArtist())
+                                    .songLiked(songLiked)
+                                    .isPublic(review.getIsPublic())
+                                    .reviewLiked(true)
+                                    .build();
+                        }
+                )
+                .toList();
     }
 
     @Transactional(readOnly = true)
     public Boolean isLike(UUID userId, Long reviewId) {
-        return likedReviewRepository.findByUserIdAndReviewEntityId(userId,reviewId);
+
+        Boolean ha = likedReviewRepository.existsByUserIdAndReviewEntityId(userId,reviewId);
+        log.info(ha+"");
+        return ha;
     }
 
     @Transactional
     public void unlikeReview(UUID userId, Long reviewId) {
-        ReviewEntity review = reviewService.getReviewEntityById(reviewId);
+        ReviewEntity review = reviewRepository.findById(reviewId).orElseThrow(() -> new IllegalArgumentException("리뷰가 존재하지 않습니다"));
         LikedReviewEntity likedReviewEntity = likedReviewRepository.findByUserIdAndReviewEntity(userId, review)
                 .orElseThrow(() -> new EntityNotFoundException("LikedSongEntity not found"));
 

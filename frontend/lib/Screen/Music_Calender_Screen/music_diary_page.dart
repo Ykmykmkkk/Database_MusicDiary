@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:musicdiary/Provider/UserProvider.dart';
 import 'package:musicdiary/Screen/Music_Calender_Screen/day_review_page.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MusicDiaryPage extends StatefulWidget {
+  final String userId;
   final String username;
-  const MusicDiaryPage({super.key, required this.username});
+  const MusicDiaryPage(
+      {super.key, required this.userId, required this.username});
 
   @override
   State<MusicDiaryPage> createState() => _MusicDiaryPageState();
@@ -11,13 +16,13 @@ class MusicDiaryPage extends StatefulWidget {
 
 class _MusicDiaryPageState extends State<MusicDiaryPage> {
   DateTime _selectedDate = DateTime.now();
-  late String username;
+  late String userId;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    username = widget.username;
+    userId = widget.userId;
   }
 
   void _lastMonth() {

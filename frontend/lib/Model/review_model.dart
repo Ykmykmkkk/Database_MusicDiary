@@ -1,16 +1,16 @@
 class ReviewModel {
-  final String reviewId;
+  final int reviewId;
   final String writerId;
   final String writerUsername; // 사용자 이름
-  final String songId;
+  final int songId;
   final String songTitle; // 노래 제목
   final String songArtist; // 아티스트 정보
-  bool songLiked; // ✅ final 제거 -> 변경 가능하게 수정
+  bool songLiked; // final 제거 -> 변경 가능하게 수정
   final DateTime reviewDate; // 리뷰 날짜
   final String reviewTitle; // 리뷰 제목
   final String reviewContent; // 리뷰 내용
   final bool isPublic; // 리뷰 공개 여부
-  bool reviewLiked; // ✅ final 제거 -> 변경 가능하게 수정
+  bool reviewLiked; // final 제거 -> 변경 가능하게 수정
 
   ReviewModel({
     required this.reviewId,

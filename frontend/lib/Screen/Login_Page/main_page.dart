@@ -3,10 +3,10 @@ import 'package:musicdiary/Screen/Today_Music_Screen/today_music_page.dart';
 import 'package:musicdiary/Screen/Music_Calender_Screen/music_diary_page.dart';
 import 'package:musicdiary/Screen/My_Page_Scree/my_page.dart';
 import 'package:musicdiary/Screen/Review_Community_Screen/review_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MainPage extends StatefulWidget {
-  final String username;
-  const MainPage({super.key, required this.username});
+  const MainPage({super.key});
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -14,19 +14,28 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
-  late String username;
+  late String? userId;
+  late String? username;
   late List<Widget> screens;
 
   @override
   void initState() {
     super.initState();
-    username = widget.username;
-    screens = [
-      TodayMusicPage(username: username),
-      MusicDiaryPage(username: username),
-      ReviewPage(username: username),
-      MyPage(username: username),
-    ];
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userId = prefs.getString('userId') ?? 'Guest';
+      username = prefs.getString('username') ?? 'Unknown';
+      screens = [
+        TodayMusicPage(userId: userId!, username: username!),
+        MusicDiaryPage(userId: userId!, username: username!),
+        ReviewPage(userId: userId!, username: username!),
+        MyPage(userId: userId!, username: username!),
+      ];
+    });
   }
 
   void _changeTab(int index) {

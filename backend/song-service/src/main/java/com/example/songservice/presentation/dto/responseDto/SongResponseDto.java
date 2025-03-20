@@ -14,6 +14,7 @@ import java.time.LocalDate;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SongResponseDto {
+    private Long id;
     private String title;
     private String artist;
     private String album;

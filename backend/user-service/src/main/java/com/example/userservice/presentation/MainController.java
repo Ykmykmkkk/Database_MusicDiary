@@ -6,6 +6,7 @@ import com.example.userservice.presentation.dto.requestDto.DuplicateUserRequestD
 import com.example.userservice.presentation.dto.requestDto.RegisterUserRequestDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/")
+@Slf4j
 public class MainController {
     private final UserService userService;
 
@@ -48,7 +50,8 @@ public class MainController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<?> getUsername(@RequestHeader("X-User-Id") UUID userId){
+    public ResponseEntity<?> getUsername(@PathVariable UUID userId){
+        log.info("feignclient 호출 성공");
         String username = userService.getUsernameByUserId(userId);
         return ResponseEntity.ok(username);
     }

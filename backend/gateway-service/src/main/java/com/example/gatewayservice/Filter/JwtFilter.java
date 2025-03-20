@@ -62,7 +62,7 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
             ServerWebExchange modifiedExchange = exchange.mutate()
                     .request(modifiedRequest)
                     .build(); // modifiedRequest를 반영한 ServerWebExchange 생성해서 반영
-
+            log.info("jwt를 x-user-id로 변환"+modifiedExchange.getRequest().getHeaders());
             return chain.filter(modifiedExchange);
         };
     }

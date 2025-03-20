@@ -5,6 +5,7 @@ import com.example.songservice.common.SongDto;
 import com.example.songservice.presentation.dto.requestDto.SetSongLikeRequestDto;
 import com.example.songservice.presentation.dto.responseDto.SongResponseDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @RestController
+@Slf4j
 @RequestMapping("/")
 public class LikedSongController {
     private final LikedSongService likedSongService;
@@ -42,6 +44,7 @@ public class LikedSongController {
     @GetMapping("/like/all")
     public ResponseEntity<?> getSongLike(@RequestHeader("X-User-Id") UUID userId) {
         try {
+            log.info("여긴 왔다");
             List<SongDto> likedSongList = likedSongService.getLikedSongListByUserId(userId);
             List<SongResponseDto> responseDtoList = likedSongList.stream().map(songDto ->
                     SongResponseDto.builder()
@@ -53,9 +56,11 @@ public class LikedSongController {
                             .isLike(songDto.getIsLike())
                             .build()
             ).toList();
+            log.info("여긴 왔다2");
             return ResponseEntity.ok(responseDtoList);
         }
         catch (Exception e) {
+            log.info("여긴 왔다3");
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
