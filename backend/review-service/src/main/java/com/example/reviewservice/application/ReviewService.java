@@ -8,12 +8,15 @@ import com.example.reviewservice.domain.ReviewEntity;
 import com.example.reviewservice.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cloud.circuitbreaker.resilience4j.Resilience4JCircuitBreakerFactory;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,6 +28,7 @@ public class ReviewService {
     private final UserClient userClient;
     private final SongClient songClient;
     private final LikedReviewService likedReviewService;
+    private final Resilience4JCircuitBreakerFactory circuitBreakerFactory; // 주입 추가
     @Transactional(readOnly = true)
     public List<ReviewDto> getAllReview(UUID userId) {
         List<ReviewEntity> reviewEntities = reviewRepository.findAllByWriterId(userId);
@@ -61,11 +65,14 @@ public class ReviewService {
         }
         return toReviewDtoList(null,reviewEntities);
     }
-    @Transactional(readOnly = true) // 사용자가 캘린더를 통해 해당 날짜에 자신이 작성한 리뷰를 받는 메소드
+    @Transactional(readOnly = true)
     public ReviewDto getReviewDate(UUID userId, LocalDate date) {
-        ReviewEntity reviewEntity = reviewRepository.findByWriterIdAndReviewDate(userId, date).
-                orElseThrow(() -> new IllegalArgumentException("리뷰가 존재하지 않습니다"));
-        log.info("서비스1:");
+        ReviewEntity reviewEntity = reviewRepository.findByWriterIdAndReviewDate(userId, date)
+                .orElseThrow(() -> new IllegalArgumentException("리뷰가 존재하지 않습니다"));
+
+        // CircuitBreaker 생성
+        CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitbreaker");
+
         ResponseEntity<String> userResponse = userClient.getUsername(userId);
         String writerUsername = userResponse.getBody();
         log.info("서비스2:");
@@ -77,7 +84,42 @@ public class ReviewService {
         log.info("서비스4:");
         Boolean reviewLiked = likedReviewService.isLike(userId, reviewEntity.getId());
         log.info("서비스5:");
-        return  ReviewDto.builder()
+        /*
+        // 1. UserClient 호출
+        String writerUsername = circuitBreaker.run(
+                () -> userClient.getUsername(userId).getBody(),
+                throwable -> {
+                    log.error("UserClient 호출 실패: {}", throwable.getMessage());
+                    return "Unknown User"; // Fallback 값
+                }
+        );
+        log.info("서비스2: 사용자 이름 가져오기 완료");
+
+        // 2. SongClient - SongTitleAndArtist 호출
+        SongResponseDto songData = circuitBreaker.run(
+                () -> songClient.getSongTitleAndArtist(reviewEntity.getSongId()).getBody(),
+                throwable -> {
+                    log.error("SongClient SongTitleAndArtist 호출 실패: {}", throwable.getMessage());
+                    return new SongResponseDto("Unknown Title", "Unknown Artist"); // Fallback 값
+                }
+        );
+        log.info("서비스3: 노래 정보 가져오기 완료");
+
+        // 3. SongClient - isLikedSong 호출
+        Boolean songLiked = circuitBreaker.run(
+                () -> songClient.isLikedSong(reviewEntity.getSongId()).getBody(),
+                throwable -> {
+                    log.error("SongClient isLikedSong 호출 실패: {}", throwable.getMessage());
+                    return false; // Fallback 값
+                }
+        );
+        log.info("서비스4: 노래 좋아요 상태 가져오기 완료");
+
+        // 4. LikedReviewService 호출 (로컬 호출)
+        Boolean reviewLiked = likedReviewService.isLike(userId, reviewEntity.getId());
+        log.info("서비스5: 리뷰 좋아요 상태 가져오기 완료");
+*/
+        return ReviewDto.builder()
                 .id(reviewEntity.getId())
                 .reviewDate(reviewEntity.getReviewDate())
                 .writerId(reviewEntity.getWriterId())

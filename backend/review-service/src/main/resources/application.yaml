@@ -29,4 +29,24 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: ${NamingServerURL}
+      defaultZone: ${NAMING_SERVER_URL}
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+    propagation:
+      consume: b3
+      produce: b3_multi
+  zipkin:
+    tracing:
+      endpoint: "${ZIPKIN_SERVER_URL}/api/v2/spans"
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      circuitbreaker:
+        sliding-window-size: 10
+        failure-rate-threshold: 40 # 100개의 요청 중 40개 실패시 서킷 브레이커 open(실행)
+        wait-duration-in-open-state: 10000 #서킷 브레이커 오픈 시 유지하는 시간
+        permitted-number-of-calls-in-half-open-state: 5
+        register-health-indicator: true
