@@ -40,13 +40,17 @@ management:
   zipkin:
     tracing:
       endpoint: "${ZIPKIN_SERVER_URL}/api/v2/spans"
+  endpoints:
+    web:
+      exposure:
+        include: health, httptrace ,info,matrices, prometheus
 
 resilience4j:
   circuitbreaker:
     instances:
       circuitbreaker:
-        sliding-window-size: 10
-        failure-rate-threshold: 40 # 100개의 요청 중 40개 실패시 서킷 브레이커 open(실행)
+        sliding-window-size: 50
+        failure-rate-threshold: 50 # 100개의 요청 중 40개 실패시 서킷 브레이커 open(실행)
         wait-duration-in-open-state: 10000 #서킷 브레이커 오픈 시 유지하는 시간
         permitted-number-of-calls-in-half-open-state: 5
         register-health-indicator: true

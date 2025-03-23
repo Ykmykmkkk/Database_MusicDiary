@@ -9,7 +9,7 @@ class ReviewService {
   static final hostAddress = dotenv.env['API_ADDRESS'];
 
   static Future<void> createReview(String reviewDate, String userId, int songId,
-      String reviewContent, bool isPublic) async {
+      String reviewTitle, String reviewContent, bool isPublic) async {
     var token = await AuthService.loadToken();
     var headers = {
       'Content-Type': 'application/json',
@@ -21,7 +21,7 @@ class ReviewService {
       "reviewDate": reviewDate,
       "writerId": userId,
       "songId": songId,
-      "reviewTitle": "임시제목",
+      "reviewTitle": reviewTitle,
       "reviewContent": reviewContent,
       "isPublic": isPublic,
     });
@@ -58,6 +58,7 @@ class ReviewService {
       if (response.statusCode == 200) {
         final responseBody = utf8.decode(response.bodyBytes); // UTF-8 디코딩
         Map<String, dynamic> data = jsonDecode(responseBody);
+        print(data);
         return ReviewModel.fromJson(data);
       } else {
         print('ServerMessage: ${response.body}');
@@ -101,8 +102,8 @@ class ReviewService {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${token[1]}'
     };
-    var request = http.Request('Delete',
-        Uri.parse('http://$hostAddress:8000/review/unlike/$reviewId'));
+    var request = http.Request(
+        'Delete', Uri.parse('http://$hostAddress:8000/review/like/$reviewId'));
     request.headers.addAll(headers);
     try {
       http.StreamedResponse response = await request.send();

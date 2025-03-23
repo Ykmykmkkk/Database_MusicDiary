@@ -67,9 +67,6 @@ class _LikedReviewsPageState extends State<LikedReviewsPage> {
                     padding: const EdgeInsets.only(bottom: 16.0),
                     child: ReviewCardWidget(
                         reviewData: review,
-                        username: review.writerUsername,
-                        songLiked: review.songLiked,
-                        reviewLiked: true,
                         onSongLikePressed: () {
                           setState(() {
                             review.songLiked = !review.songLiked;

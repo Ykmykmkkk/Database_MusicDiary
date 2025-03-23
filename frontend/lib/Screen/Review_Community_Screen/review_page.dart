@@ -62,9 +62,6 @@ class _ReviewPageState extends State<ReviewPage> {
                   padding: const EdgeInsets.only(bottom: 16.0),
                   child: ReviewCardWidget(
                     reviewData: review,
-                    username: review.writerUsername,
-                    songLiked: review.songLiked,
-                    reviewLiked: review.reviewLiked,
                     onSongLikePressed: () async {
                       try {
                         if (review.songLiked) {

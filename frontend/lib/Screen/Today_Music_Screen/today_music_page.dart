@@ -20,13 +20,15 @@ class TodayMusicPage extends StatefulWidget {
 class _TodayMusicPageState extends State<TodayMusicPage> {
   SongModel? selectedSong; // 선택된 노래 정보 저장
   bool isPublic = false;
+  final TextEditingController _reviewTitleController =
+      TextEditingController(); // ✅ 감상평 제목 컨트롤러 추가
   final TextEditingController _reviewController = TextEditingController();
   late String today;
   late String todayy;
   late String userId;
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     DateTime now = DateTime.now();
     today = DateFormat('yyyy-MM-dd').format(now);
@@ -86,13 +88,13 @@ class _TodayMusicPageState extends State<TodayMusicPage> {
                     ? Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("제목: ${selectedSong!.title}",
+                          Text("제목: ${selectedSong!.songTitle}",
                               style: const TextStyle(fontSize: 16)),
                           const SizedBox(height: 8),
-                          Text("앨범: ${selectedSong!.album}",
+                          Text("앨범: ${selectedSong!.songAlbum}",
                               style: const TextStyle(fontSize: 16)),
                           const SizedBox(height: 8),
-                          Text("가수: ${selectedSong!.artist}",
+                          Text("가수: ${selectedSong!.songArtist}",
                               style: const TextStyle(fontSize: 16)),
                           const SizedBox(height: 8),
                           Text(
@@ -112,7 +114,28 @@ class _TodayMusicPageState extends State<TodayMusicPage> {
                       ),
               ),
             ),
-            // 감사평 입력 및 공개여부
+            // 감상평 제목 입력
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text("감상평 제목",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _reviewTitleController, // ✅ 감상평 제목 입력 필드
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: "감상평 제목을 입력하세요...",
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            // 감상평 입력 및 공개여부
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Column(
@@ -158,6 +181,12 @@ class _TodayMusicPageState extends State<TodayMusicPage> {
                     );
                     return;
                   }
+                  if (_reviewTitleController.text.trim().isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("감상평 제목을 입력해주세요.")),
+                    );
+                    return;
+                  }
                   if (_reviewController.text.trim().isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text("감상평을 입력해주세요.")),
@@ -166,8 +195,13 @@ class _TodayMusicPageState extends State<TodayMusicPage> {
                   }
 
                   try {
-                    ReviewService.createReview(today, userId,
-                        selectedSong!.songId, _reviewController.text, isPublic);
+                    ReviewService.createReview(
+                        today,
+                        userId,
+                        selectedSong!.songId,
+                        _reviewTitleController.text, // ✅ 제목 추가
+                        _reviewController.text,
+                        isPublic);
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text("감상평이 저장되었습니다.")),
                     );
@@ -177,6 +211,7 @@ class _TodayMusicPageState extends State<TodayMusicPage> {
                   }
 
                   // 입력 필드 초기화
+                  _reviewTitleController.clear();
                   _reviewController.clear();
                 },
                 child: const Text("저장"),
