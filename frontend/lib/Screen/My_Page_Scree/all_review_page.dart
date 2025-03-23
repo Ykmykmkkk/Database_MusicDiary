@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:musicdiary/Model/review_model.dart';
 import 'package:musicdiary/Service/review_service.dart';
+import 'package:musicdiary/Service/song_service.dart';
+import 'package:musicdiary/Widget/custom_dialog_widget.dart';
 import 'package:musicdiary/Widget/review_card_widget.dart';
 
 class AllReviewPage extends StatefulWidget {
+  final String userId;
   final String username;
-  const AllReviewPage({super.key, required this.username});
+  const AllReviewPage(
+      {super.key, required this.userId, required this.username});
 
   @override
   State<AllReviewPage> createState() => _AllReviewPageState();
@@ -18,7 +22,7 @@ class _AllReviewPageState extends State<AllReviewPage> {
   void initState() {
     super.initState();
     // 좋아요한 노래 데이터를 서버 또는 데이터베이스에서 가져옴
-    allReviews = ReviewService.getAllReviews(widget.username);
+    allReviews = ReviewService.getAllReviews(widget.userId);
   }
 
   @override
@@ -66,12 +70,36 @@ class _AllReviewPageState extends State<AllReviewPage> {
                 return Padding(
                     padding: const EdgeInsets.only(bottom: 16.0),
                     child: ReviewCardWidget(
-                        reviewData: review,
-                        username: review.writerUsername,
-                        songLiked: false,
-                        reviewLiked: true,
-                        onSongLikePressed: () {},
-                        onReviewLikePressed: () {}));
+                      reviewData: review,
+                      onSongLikePressed: () async {
+                        try {
+                          if (review.songLiked) {
+                            await SongService.unlikeSong(review.songId);
+                          } else {
+                            await SongService.likeSong(review.songId);
+                          }
+                          setState(() {
+                            review.songLiked = !review.songLiked;
+                          });
+                        } catch (e) {
+                          showErrorDialog(context, "좋아요 처리 중 오류 발생");
+                        }
+                      },
+                      onReviewLikePressed: () async {
+                        try {
+                          if (review.reviewLiked) {
+                            await ReviewService.unlikeReview(review.reviewId);
+                          } else {
+                            await ReviewService.likeReview(review.reviewId);
+                          }
+                          setState(() {
+                            review.reviewLiked = !review.reviewLiked;
+                          });
+                        } catch (e) {
+                          showErrorDialog(context, "좋아요 처리 중 오류 발생");
+                        }
+                      },
+                    ));
               },
             );
           } else {

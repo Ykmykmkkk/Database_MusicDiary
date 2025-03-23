@@ -4,18 +4,12 @@ import 'package:musicdiary/Model/review_model.dart';
 
 class ReviewCardWidget extends StatelessWidget {
   final ReviewModel reviewData;
-  final String username;
-  final bool songLiked;
-  final bool reviewLiked;
   final VoidCallback onSongLikePressed;
   final VoidCallback onReviewLikePressed;
 
   const ReviewCardWidget({
     super.key,
     required this.reviewData,
-    required this.username,
-    required this.songLiked,
-    required this.reviewLiked,
     required this.onSongLikePressed,
     required this.onReviewLikePressed,
   });
@@ -90,7 +84,9 @@ class ReviewCardWidget extends StatelessWidget {
                     ),
                     IconButton(
                       icon: Icon(
-                        songLiked ? Icons.favorite : Icons.favorite_border,
+                        reviewData.songLiked
+                            ? Icons.favorite
+                            : Icons.favorite_border,
                         color: Colors.pink,
                       ),
                       onPressed: onSongLikePressed,
@@ -100,9 +96,9 @@ class ReviewCardWidget extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
-              "감상평",
-              style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+            Text(
+              reviewData.reviewTitle,
+              style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             Text(
@@ -114,7 +110,7 @@ class ReviewCardWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Review by: $username",
+                  "Review by: ${reviewData.writerUsername}",
                   style: const TextStyle(
                     fontSize: 16,
                     color: Colors.grey,
@@ -122,9 +118,10 @@ class ReviewCardWidget extends StatelessWidget {
                 ),
                 IconButton(
                   icon: Icon(
-                    reviewLiked ? Icons.favorite : Icons.favorite_border,
-                    color: reviewLiked ? Colors.pink : Colors.grey,
-                  ),
+                      reviewData.reviewLiked
+                          ? Icons.favorite
+                          : Icons.favorite_border,
+                      color: Colors.pink),
                   onPressed: onReviewLikePressed,
                 ),
               ],

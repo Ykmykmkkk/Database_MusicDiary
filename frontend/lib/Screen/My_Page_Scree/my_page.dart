@@ -136,8 +136,8 @@ class _MyPageState extends State<MyPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>
-                                AllReviewPage(username: username)),
+                            builder: (context) => AllReviewPage(
+                                userId: userId, username: username)),
                       );
                     },
                   ),

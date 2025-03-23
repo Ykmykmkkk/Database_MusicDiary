@@ -70,9 +70,9 @@ class _LikedSongsPageState extends State<LikedSongsPage> {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 16.0),
                   child: SongCardWidget(
-                    title: song.title,
-                    album: song.album,
-                    artist: song.artist,
+                    title: song.songTitle,
+                    album: song.songAlbum,
+                    artist: song.songArtist,
                     releaseDate: song.releaseDate,
                     durationTime: song.durationTime,
                     isLiked: true,

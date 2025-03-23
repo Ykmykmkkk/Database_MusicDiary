@@ -57,6 +57,8 @@ public class ReviewController {
             Boolean reviewLike = likedReviewService.isLike(userId, reviewDto.getId());
             log.info("컨트롤러: 여기까지3");
             ReviewResponseDto reviewResponseDto = ReviewResponseDto.builder()
+                    .writerUsername(reviewDto.getWriterUsername())
+                    .writerId(reviewDto.getWriterId())
                     .reviewId(reviewDto.getId())
                     .reviewDate(reviewDto.getReviewDate())
                     .songId(reviewDto.getSongId())
@@ -82,6 +84,8 @@ public class ReviewController {
             List<ReviewDto> reviewDtoList = reviewService.getAllReview(userId);
             List<ReviewResponseDto> reviewResponseDtoList =
                     reviewDtoList.stream().map(reviewDto -> ReviewResponseDto.builder()
+                            .writerUsername(reviewDto.getWriterUsername())
+                            .writerId(reviewDto.getWriterId())
                             .reviewId(reviewDto.getId())
                             .reviewDate(reviewDto.getReviewDate())
                             .songId(reviewDto.getSongId())
@@ -91,6 +95,7 @@ public class ReviewController {
                             .reviewTitle(reviewDto.getReviewTitle())
                             .reviewContent(reviewDto.getReviewContent())
                             .reviewLiked(likedReviewService.isLike(userId, reviewDto.getId()))
+                            .isPublic(reviewDto.getIsPublic())
                             .build()
                     ).toList();
             return ResponseEntity.ok(reviewResponseDtoList);
@@ -106,6 +111,8 @@ public class ReviewController {
             List<ReviewDto> reviewDtoList = reviewService.getPublicReview();
             List<ReviewResponseDto> reviewResponseDtoList =
                     reviewDtoList.stream().map(reviewDto -> ReviewResponseDto.builder()
+                            .writerId(reviewDto.getWriterId())
+                            .writerUsername(reviewDto.getWriterUsername())
                             .reviewId(reviewDto.getId())
                             .reviewDate(reviewDto.getReviewDate())
                             .songId(reviewDto.getSongId())

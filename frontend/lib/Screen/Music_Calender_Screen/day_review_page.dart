@@ -55,9 +55,6 @@ class _DayReviewPageState extends State<DayReviewPage> {
               child: SingleChildScrollView(
                 child: ReviewCardWidget(
                   reviewData: reviewData,
-                  username: reviewData.writerUsername,
-                  songLiked: reviewData.songLiked,
-                  reviewLiked: reviewData.reviewLiked,
                   onSongLikePressed: () async {
                     try {
                       if (reviewData.songLiked) {

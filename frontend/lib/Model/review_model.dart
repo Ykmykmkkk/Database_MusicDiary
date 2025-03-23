@@ -30,18 +30,20 @@ class ReviewModel {
   // JSON 데이터를 Dart 객체로 변환 (역직렬화)
   factory ReviewModel.fromJson(Map<String, dynamic> json) {
     return ReviewModel(
-      reviewId: json['id'],
-      writerId: json['writerId'],
-      writerUsername: json['writerUsername'],
-      songId: json['songId'],
-      songTitle: json['songTitle'],
-      songArtist: json['songArtist'],
-      songLiked: json['songLiked'] ?? false, // ✅ 추가: 기본값 false
-      reviewDate: DateTime.parse(json['reviewDate']),
-      reviewTitle: json['reviewTitle'],
-      reviewContent: json['reviewContent'],
-      isPublic: json['isPublic'],
-      reviewLiked: json['isLike'] ?? false, // 기본값 false
+      reviewId: json['reviewId'] ?? 0, // 기본값 0 설정
+      writerId: json['writerId'] ?? '',
+      writerUsername: json['writerUsername'] ?? 'Unknown User',
+      songId: json['songId'] ?? 0,
+      songTitle: json['songTitle'] ?? 'Unknown Title',
+      songArtist: json['songArtist'] ?? 'Unknown Artist',
+      songLiked: json['songLiked'] ?? false,
+      reviewDate: json['reviewDate'] != null
+          ? DateTime.parse(json['reviewDate'])
+          : DateTime.now(), // 기본값 현재 날짜
+      reviewTitle: json['reviewTitle'] ?? 'Untitled Review',
+      reviewContent: json['reviewContent'] ?? '',
+      isPublic: json['isPublic'] ?? false,
+      reviewLiked: json['reviewLiked'] ?? false,
     );
   }
 
