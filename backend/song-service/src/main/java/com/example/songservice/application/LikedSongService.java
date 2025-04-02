@@ -65,6 +65,5 @@ public class LikedSongService {
 
     public Boolean isLikedSong(UUID userId, Long songId) {
         return likedSongRepository.existsByUserIdAndSongEntityId(userId,songId);
-        //return SongDto.builder().isLike(isLiked).build();
     }
 }
